@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { LogOut, User, Home, CreditCard, TrendingUp } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -48,8 +49,10 @@ export default function Layout({ children }: LayoutProps) {
               </nav>
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+            <div className="flex items-center space-x-2">
+              <ThemeToggle />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8">
                     <AvatarFallback>
@@ -72,7 +75,8 @@ export default function Layout({ children }: LayoutProps) {
                   Sair
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </header>

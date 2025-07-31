@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { DollarSign, TrendingUp, TrendingDown, CreditCard } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, CreditCard, Plus, PlusCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Link } from 'react-router-dom';
 
 interface DashboardData {
   totalBalance: number;
@@ -133,10 +135,26 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Bem-vindo, {user?.user_metadata?.display_name || user?.email}
-        </p>
+        <div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Bem-vindo, {user?.user_metadata?.display_name || user?.email}
+          </p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Link to="/accounts">
+            <Button variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Criar Conta
+            </Button>
+          </Link>
+          <Link to="/transactions">
+            <Button size="sm">
+              <PlusCircle className="h-4 w-4 mr-2" />
+              Fazer Lançamento
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

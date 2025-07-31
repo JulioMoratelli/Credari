@@ -2,8 +2,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { LogOut, User, Home, CreditCard, TrendingUp } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { LogOut, User, Home, CreditCard, TrendingUp, ArrowLeft } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface LayoutProps {
@@ -13,6 +13,7 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const { user, signOut } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
@@ -26,7 +27,19 @@ export default function Layout({ children }: LayoutProps) {
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-8">
-              <h1 className="text-2xl font-bold text-foreground">Sistema Financeiro</h1>
+              <div className="flex items-center space-x-4">
+                {location.pathname !== '/' && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigate(-1)}
+                    className="p-2"
+                  >
+                    <ArrowLeft size={20} />
+                  </Button>
+                )}
+                <h1 className="text-2xl font-bold text-foreground">Credari</h1>
+              </div>
               <nav className="hidden md:flex space-x-4">
                 {navigation.map((item) => {
                   const Icon = item.icon;

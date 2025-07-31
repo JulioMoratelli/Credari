@@ -11,36 +11,39 @@ const Home = () => {
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <DollarSign className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold">Credari</span>
+            <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            <span className="text-xl sm:text-2xl font-bold">Credari</span>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             <ThemeToggle />
             <Link to="/auth">
-              <Button variant="outline">Login</Button>
+              <Button variant="outline" size="sm" className="hidden sm:inline-flex">Login</Button>
             </Link>
             <Link to="/auth">
-              <Button>Criar Conta</Button>
+              <Button size="sm">
+                <span className="hidden sm:inline">Criar Conta</span>
+                <span className="sm:hidden">Entrar</span>
+              </Button>
             </Link>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 px-4">
+      <section className="py-12 sm:py-20 px-4">
         <div className="container mx-auto text-center">
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent leading-tight">
             Controle Total das Suas Finanças
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto px-4">
             Gerencie suas contas, acompanhe transações e tenha insights completos sobre sua vida financeira 
             em uma plataforma moderna e segura.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/auth">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
+            <Link to="/auth" className="w-full sm:w-auto">
               <Button size="lg" className="w-full sm:w-auto">
                 Começar Agora
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </Link>
             <Button variant="outline" size="lg" className="w-full sm:w-auto">
@@ -51,16 +54,16 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 bg-muted/30">
+      <section className="py-12 sm:py-20 px-4 bg-muted/30">
         <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Recursos Principais</h2>
-            <p className="text-lg text-muted-foreground">
+          <div className="text-center mb-12 sm:mb-16 px-4">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Recursos Principais</h2>
+            <p className="text-base sm:text-lg text-muted-foreground">
               Tudo que você precisa para gerenciar suas finanças de forma eficiente
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             <Card>
               <CardHeader>
                 <DollarSign className="h-12 w-12 text-primary mb-4" />
@@ -143,19 +146,20 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4">
+      <section className="py-12 sm:py-20 px-4">
         <div className="container mx-auto text-center">
-          <div className="max-w-2xl mx-auto">
-            <Shield className="h-16 w-16 text-primary mx-auto mb-6" />
-            <h2 className="text-3xl font-bold mb-4">Seguro e Confiável</h2>
-            <p className="text-lg text-muted-foreground mb-8">
+          <div className="max-w-2xl mx-auto px-4">
+            <Shield className="h-12 w-12 sm:h-16 sm:w-16 text-primary mx-auto mb-6" />
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Seguro e Confiável</h2>
+            <p className="text-base sm:text-lg text-muted-foreground mb-8">
               Seus dados estão protegidos com as melhores práticas de segurança. 
               Comece a usar agora mesmo e tenha controle total das suas finanças.
             </p>
-            <Link to="/auth">
-              <Button size="lg">
-                Criar Minha Conta Grátis
-                <ArrowRight className="ml-2 h-5 w-5" />
+            <Link to="/auth" className="inline-block w-full sm:w-auto">
+              <Button size="lg" className="w-full sm:w-auto">
+                <span className="hidden sm:inline">Criar Minha Conta Grátis</span>
+                <span className="sm:hidden">Criar Conta Grátis</span>
+                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </Link>
           </div>

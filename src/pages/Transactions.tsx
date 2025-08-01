@@ -10,7 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, TrendingUp, TrendingDown, Calendar, Filter } from 'lucide-react';
+import { Plus, TrendingUp, TrendingDown, Calendar, Filter, Trash2 } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 interface Transaction {
   id: string;
@@ -139,6 +140,32 @@ export default function Transactions() {
       });
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (transactionId: string) => {
+    try {
+      const { error } = await supabase
+        .from('transactions')
+        .delete()
+        .eq('id', transactionId)
+        .eq('user_id', user?.id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Sucesso',
+        description: 'Transação excluída com sucesso!',
+      });
+
+      loadData();
+    } catch (error) {
+      console.error('Erro ao excluir transação:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível excluir a transação.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -358,21 +385,45 @@ export default function Transactions() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <Badge variant={transaction.type === 'income' ? 'default' : 'destructive'}>
-                      {transaction.type === 'income' ? (
-                        <TrendingUp className="mr-1 h-3 w-3" />
-                      ) : (
-                        <TrendingDown className="mr-1 h-3 w-3" />
-                      )}
-                      {transaction.type === 'income' ? 'Receita' : 'Despesa'}
-                    </Badge>
-                    <p className={`text-lg font-bold ${
-                      transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      {transaction.type === 'income' ? '+' : '-'}{formatCurrency(Number(transaction.amount))}
-                    </p>
-                  </div>
+                   <div className="flex items-center space-x-3">
+                     <Badge variant={transaction.type === 'income' ? 'default' : 'destructive'}>
+                       {transaction.type === 'income' ? (
+                         <TrendingUp className="mr-1 h-3 w-3" />
+                       ) : (
+                         <TrendingDown className="mr-1 h-3 w-3" />
+                       )}
+                       {transaction.type === 'income' ? 'Receita' : 'Despesa'}
+                     </Badge>
+                     <p className={`text-lg font-bold ${
+                       transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                     }`}>
+                       {transaction.type === 'income' ? '+' : '-'}{formatCurrency(Number(transaction.amount))}
+                     </p>
+                     <AlertDialog>
+                       <AlertDialogTrigger asChild>
+                         <Button variant="outline" size="sm">
+                           <Trash2 className="h-4 w-4" />
+                         </Button>
+                       </AlertDialogTrigger>
+                       <AlertDialogContent>
+                         <AlertDialogHeader>
+                           <AlertDialogTitle>Excluir transação</AlertDialogTitle>
+                           <AlertDialogDescription>
+                             Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.
+                           </AlertDialogDescription>
+                         </AlertDialogHeader>
+                         <AlertDialogFooter>
+                           <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                           <AlertDialogAction
+                             onClick={() => handleDelete(transaction.id)}
+                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                           >
+                             Excluir
+                           </AlertDialogAction>
+                         </AlertDialogFooter>
+                       </AlertDialogContent>
+                     </AlertDialog>
+                   </div>
                 </div>
               </CardContent>
             </Card>

@@ -2,7 +2,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { LogOut, User, Home, CreditCard, TrendingUp, ArrowLeft } from 'lucide-react';
+import { LogOut, User, Home, CreditCard, TrendingUp, ArrowLeft, Users } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
@@ -19,6 +19,7 @@ export default function Layout({ children }: LayoutProps) {
     { name: 'Dashboard', href: '/', icon: Home },
     { name: 'Contas', href: '/accounts', icon: CreditCard },
     { name: 'Transações', href: '/transactions', icon: TrendingUp },
+    { name: 'Membros', href: '/group-members', icon: Users },
   ];
 
   return (

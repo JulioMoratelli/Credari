@@ -11,6 +11,7 @@ import Auth from "./pages/Auth";
 import Accounts from "./pages/Accounts";
 import Transactions from "./pages/Transactions";
 import GroupMembers from "./pages/GroupMembers";
+import Invitations from "./pages/Invitations";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,11 @@ const App = () => (
               <Route path="/group-members" element={
                 <Layout>
                   <GroupMembers />
+                </Layout>
+              } />
+              <Route path="/invitations" element={
+                <Layout>
+                  <Invitations />
                 </Layout>
               } />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -8,7 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { Users, UserPlus, Trash2, Copy, Crown } from 'lucide-react';
+import { Users, UserPlus, Trash2, Copy, Crown, Mail, X } from 'lucide-react';
 
 interface GroupMember {
   id: string;
@@ -29,11 +29,20 @@ interface Group {
   description: string;
 }
 
+interface GroupInvitation {
+  id: string;
+  invited_email: string;
+  status: string;
+  created_at: string;
+  expires_at: string;
+}
+
 export default function GroupMembers() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [group, setGroup] = useState<Group | null>(null);
   const [members, setMembers] = useState<GroupMember[]>([]);
+  const [invitations, setInvitations] = useState<GroupInvitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [addMemberEmail, setAddMemberEmail] = useState('');
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
@@ -103,6 +112,8 @@ export default function GroupMembers() {
           setMembers([]);
         }
 
+        // Carregar convites pendentes
+        await loadInvitations();
       }
     } catch (error) {
       console.error('Erro ao carregar dados do grupo:', error);
@@ -116,73 +127,126 @@ export default function GroupMembers() {
     }
   };
 
-  const handleAddMember = async () => {
+  const handleSendInvitation = async () => {
     if (!addMemberEmail.trim() || !group) return;
 
     try {
       setSubmitting(true);
 
-      // Buscar usuário pelo email
-      const { data: profileData, error: profileError } = await supabase
+      // Verificar se já existe convite pendente
+      const { data: existingInvitation } = await supabase
+        .from('group_invitations')
+        .select('id')
+        .eq('group_id', group.id)
+        .eq('invited_email', addMemberEmail.trim())
+        .eq('status', 'pending')
+        .single();
+
+      if (existingInvitation) {
+        toast({
+          title: 'Erro',
+          description: 'Já existe um convite pendente para este email.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Verificar se usuário já é membro
+      const { data: profileData } = await supabase
         .from('profiles')
-        .select('user_id, email')
+        .select('user_id')
         .eq('email', addMemberEmail.trim())
         .single();
 
-      if (profileError) {
-        toast({
-          title: 'Erro',
-          description: 'Usuário não encontrado. Verifique se o email está correto.',
-          variant: 'destructive',
-        });
-        return;
+      if (profileData) {
+        const { data: existingMember } = await supabase
+          .from('group_members')
+          .select('id')
+          .eq('group_id', group.id)
+          .eq('user_id', profileData.user_id)
+          .single();
+
+        if (existingMember) {
+          toast({
+            title: 'Erro',
+            description: 'Este usuário já é membro do grupo.',
+            variant: 'destructive',
+          });
+          return;
+        }
       }
 
-      // Verificar se já é membro
-      const { data: existingMember } = await supabase
-        .from('group_members')
-        .select('id')
-        .eq('group_id', group.id)
-        .eq('user_id', profileData.user_id)
-        .single();
-
-      if (existingMember) {
-        toast({
-          title: 'Erro',
-          description: 'Este usuário já é membro do grupo.',
-          variant: 'destructive',
-        });
-        return;
-      }
-
-      // Adicionar membro
+      // Criar convite
       const { error: insertError } = await supabase
-        .from('group_members')
+        .from('group_invitations')
         .insert({
           group_id: group.id,
-          user_id: profileData.user_id,
-          permission_level: 'member'
+          invited_email: addMemberEmail.trim(),
+          invited_by: user?.id
         });
 
       if (insertError) throw insertError;
 
       toast({
         title: 'Sucesso',
-        description: 'Membro adicionado com sucesso!',
+        description: 'Convite enviado com sucesso!',
       });
 
       setAddMemberEmail('');
       setIsAddMemberOpen(false);
-      loadGroupData();
+      loadInvitations();
     } catch (error) {
-      console.error('Erro ao adicionar membro:', error);
+      console.error('Erro ao enviar convite:', error);
       toast({
         title: 'Erro',
-        description: 'Não foi possível adicionar o membro.',
+        description: 'Não foi possível enviar o convite.',
         variant: 'destructive',
       });
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const loadInvitations = async () => {
+    if (!group) return;
+
+    try {
+      const { data: invitationsData, error } = await supabase
+        .from('group_invitations')
+        .select('*')
+        .eq('group_id', group.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      setInvitations(invitationsData || []);
+    } catch (error) {
+      console.error('Erro ao carregar convites:', error);
+    }
+  };
+
+  const handleCancelInvitation = async (invitationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('group_invitations')
+        .update({ status: 'rejected' })
+        .eq('id', invitationId);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Sucesso',
+        description: 'Convite cancelado com sucesso!',
+      });
+
+      loadInvitations();
+    } catch (error) {
+      console.error('Erro ao cancelar convite:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível cancelar o convite.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -268,9 +332,9 @@ export default function GroupMembers() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Adicionar Membro</DialogTitle>
+              <DialogTitle>Enviar Convite</DialogTitle>
               <DialogDescription>
-                Digite o email do usuário que deseja adicionar ao grupo.
+                Digite o email do usuário que deseja convidar para o grupo. Um convite será enviado e o usuário precisará aceitar.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -285,10 +349,10 @@ export default function GroupMembers() {
                 Cancelar
               </Button>
               <Button 
-                onClick={handleAddMember} 
+                onClick={handleSendInvitation} 
                 disabled={submitting || !addMemberEmail.trim()}
               >
-                {submitting ? 'Adicionando...' : 'Adicionar'}
+                {submitting ? 'Enviando...' : 'Enviar Convite'}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -315,6 +379,66 @@ export default function GroupMembers() {
           </div>
         </CardContent>
       </Card>
+
+      {invitations.filter(inv => inv.status === 'pending').length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Convites Pendentes ({invitations.filter(inv => inv.status === 'pending').length})</CardTitle>
+            <CardDescription>
+              Convites enviados aguardando resposta
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {invitations
+                .filter(invitation => invitation.status === 'pending')
+                .map((invitation) => (
+                  <div key={invitation.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <Mail className="h-8 w-8 text-muted-foreground" />
+                      <div>
+                        <p className="font-medium">{invitation.invited_email}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Enviado em {new Date(invitation.created_at).toLocaleDateString('pt-BR')}
+                        </p>
+                      </div>
+                      <Badge variant="outline">Pendente</Badge>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <p className="text-sm text-muted-foreground">
+                        Expira em {new Date(invitation.expires_at).toLocaleDateString('pt-BR')}
+                      </p>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Cancelar convite</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja cancelar este convite?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleCancelInvitation(invitation.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Cancelar Convite
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

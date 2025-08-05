@@ -317,17 +317,18 @@ export default function GroupMembers() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Membros do Grupo</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">Membros do Grupo</h1>
           <p className="text-muted-foreground">{group.name}</p>
         </div>
         <Dialog open={isAddMemberOpen} onOpenChange={setIsAddMemberOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="w-full sm:w-auto">
               <UserPlus className="mr-2 h-4 w-4" />
-              Adicionar Membro
+              <span className="hidden sm:inline">Adicionar Membro</span>
+              <span className="sm:hidden">Adicionar</span>
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -367,14 +368,15 @@ export default function GroupMembers() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
             <Input 
               value={group.invite_code || ''} 
               readOnly 
-              className="font-mono"
+              className="font-mono flex-1"
             />
-            <Button variant="outline" onClick={copyInviteCode}>
-              <Copy className="h-4 w-4" />
+            <Button variant="outline" onClick={copyInviteCode} className="w-full sm:w-auto">
+              <Copy className="h-4 w-4 mr-2 sm:mr-0" />
+              <span className="sm:hidden">Copiar Código</span>
             </Button>
           </div>
         </CardContent>
@@ -393,25 +395,26 @@ export default function GroupMembers() {
               {invitations
                 .filter(invitation => invitation.status === 'pending')
                 .map((invitation) => (
-                  <div key={invitation.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div key={invitation.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border rounded-lg space-y-3 sm:space-y-0">
                     <div className="flex items-center space-x-4">
-                      <Mail className="h-8 w-8 text-muted-foreground" />
-                      <div>
-                        <p className="font-medium">{invitation.invited_email}</p>
+                      <Mail className="h-8 w-8 text-muted-foreground flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium truncate">{invitation.invited_email}</p>
                         <p className="text-sm text-muted-foreground">
                           Enviado em {new Date(invitation.created_at).toLocaleDateString('pt-BR')}
                         </p>
                       </div>
-                      <Badge variant="outline">Pendente</Badge>
+                      <Badge variant="outline" className="flex-shrink-0">Pendente</Badge>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                       <p className="text-sm text-muted-foreground">
                         Expira em {new Date(invitation.expires_at).toLocaleDateString('pt-BR')}
                       </p>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button variant="outline" size="sm">
-                            <X className="h-4 w-4" />
+                          <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                            <X className="h-4 w-4 sm:mr-0 mr-2" />
+                            <span className="sm:hidden">Cancelar</span>
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
@@ -450,13 +453,13 @@ export default function GroupMembers() {
         <CardContent>
           <div className="space-y-4">
             {members.map((member) => (
-              <div key={member.id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div key={member.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border rounded-lg space-y-3 sm:space-y-0">
                 <div className="flex items-center space-x-4">
-                  <div>
-                    <p className="font-medium">{member.profiles.display_name || 'Sem nome'}</p>
-                    <p className="text-sm text-muted-foreground">{member.profiles.email}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium truncate">{member.profiles.display_name || 'Sem nome'}</p>
+                    <p className="text-sm text-muted-foreground truncate">{member.profiles.email}</p>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 flex-shrink-0">
                     {member.user_id === group.admin_id && (
                       <Badge variant="default">
                         <Crown className="mr-1 h-3 w-3" />
@@ -468,15 +471,16 @@ export default function GroupMembers() {
                     )}
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                   <p className="text-sm text-muted-foreground">
                     Entrou em {new Date(member.joined_at).toLocaleDateString('pt-BR')}
                   </p>
                   {member.user_id !== group.admin_id && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <Trash2 className="h-4 w-4" />
+                        <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                          <Trash2 className="h-4 w-4 sm:mr-0 mr-2" />
+                          <span className="sm:hidden">Remover</span>
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>

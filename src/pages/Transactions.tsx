@@ -217,11 +217,11 @@ export default function Transactions() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Transações</h1>
-        <div className="flex items-center space-x-2">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <h1 className="text-2xl md:text-3xl font-bold">Transações</h1>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-full sm:w-40">
               <Filter className="mr-2 h-4 w-4" />
               <SelectValue />
             </SelectTrigger>
@@ -234,9 +234,10 @@ export default function Transactions() {
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="w-full sm:w-auto">
                 <Plus className="mr-2 h-4 w-4" />
-                Nova Transação
+                <span className="hidden sm:inline">Nova Transação</span>
+                <span className="sm:hidden">Nova</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
@@ -373,20 +374,20 @@ export default function Transactions() {
           {filteredTransactions.map((transaction) => (
             <Card key={transaction.id}>
               <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <p className="font-medium">{transaction.description}</p>
-                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                      <span>{transaction.bank_account.name}</span>
-                      <span>{transaction.category}</span>
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                  <div className="space-y-1 min-w-0 flex-1">
+                    <p className="font-medium truncate">{transaction.description}</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm text-muted-foreground">
+                      <span className="truncate">{transaction.bank_account.name}</span>
+                      <span className="truncate">{transaction.category}</span>
                       <div className="flex items-center">
                         <Calendar className="mr-1 h-3 w-3" />
                         {new Date(transaction.transaction_date).toLocaleDateString('pt-BR')}
                       </div>
                     </div>
                   </div>
-                   <div className="flex items-center space-x-3">
-                     <Badge variant={transaction.type === 'income' ? 'default' : 'destructive'}>
+                   <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                     <Badge variant={transaction.type === 'income' ? 'default' : 'destructive'} className="self-start sm:self-center">
                        {transaction.type === 'income' ? (
                          <TrendingUp className="mr-1 h-3 w-3" />
                        ) : (
@@ -394,37 +395,39 @@ export default function Transactions() {
                        )}
                        {transaction.type === 'income' ? 'Receita' : 'Despesa'}
                      </Badge>
-                     <p className={`text-lg font-bold ${
-                       transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-                     }`}>
-                       {transaction.type === 'income' ? '+' : '-'}{formatCurrency(Number(transaction.amount))}
-                     </p>
-                     <AlertDialog>
-                       <AlertDialogTrigger asChild>
-                         <Button variant="outline" size="sm">
-                           <Trash2 className="h-4 w-4" />
-                         </Button>
-                       </AlertDialogTrigger>
-                       <AlertDialogContent>
-                         <AlertDialogHeader>
-                           <AlertDialogTitle>Excluir transação</AlertDialogTitle>
-                           <AlertDialogDescription>
-                             Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.
-                           </AlertDialogDescription>
-                         </AlertDialogHeader>
-                         <AlertDialogFooter>
-                           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                           <AlertDialogAction
-                             onClick={() => handleDelete(transaction.id)}
-                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                           >
-                             Excluir
-                           </AlertDialogAction>
-                         </AlertDialogFooter>
-                       </AlertDialogContent>
-                     </AlertDialog>
+                     <div className="flex items-center justify-between sm:justify-start gap-3">
+                       <p className={`text-lg font-bold ${
+                         transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                       }`}>
+                         {transaction.type === 'income' ? '+' : '-'}{formatCurrency(Number(transaction.amount))}
+                       </p>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="outline" size="sm">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Excluir transação</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDelete(transaction.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Excluir
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                    </div>
-                </div>
+                 </div>
               </CardContent>
             </Card>
           ))}

@@ -171,29 +171,28 @@ export default function Invitations() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p>Carregando...</p>
-          </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Carregando convites...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Convites de Grupo</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">Convites de Grupo</h1>
           <p className="text-muted-foreground">
             Gerencie os convites para participar de grupos
           </p>
         </div>
-        <Button onClick={() => navigate('/group-members')}>
+        <Button onClick={() => navigate('/group-members')} className="w-full sm:w-auto">
           <UserPlus className="mr-2 h-4 w-4" />
-          Convidar Membros
+          <span className="hidden sm:inline">Convidar Membros</span>
+          <span className="sm:hidden">Convidar</span>
         </Button>
       </div>
 
@@ -207,41 +206,44 @@ export default function Invitations() {
         <CardContent>
           <div className="space-y-4">
             {invitations.map((invitation) => (
-              <div key={invitation.id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div key={invitation.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border rounded-lg space-y-4 sm:space-y-0">
                 <div className="flex items-center space-x-4">
-                  <Mail className="h-8 w-8 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium">{invitation.groups.name}</p>
+                  <Mail className="h-8 w-8 text-muted-foreground flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium truncate">{invitation.groups.name}</p>
                     {invitation.groups.description && (
-                      <p className="text-sm text-muted-foreground">{invitation.groups.description}</p>
+                      <p className="text-sm text-muted-foreground truncate">{invitation.groups.description}</p>
                     )}
                     <p className="text-xs text-muted-foreground">
                       Recebido em {new Date(invitation.created_at).toLocaleDateString('pt-BR')}
                     </p>
                   </div>
-                  {getStatusBadge(invitation.status, invitation.expires_at)}
+                  <div className="flex-shrink-0">
+                    {getStatusBadge(invitation.status, invitation.expires_at)}
+                  </div>
                 </div>
                 
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                   {invitation.status === 'pending' && (
-                    <p className="text-sm text-muted-foreground mr-4">
+                    <p className="text-sm text-muted-foreground">
                       Expira em {new Date(invitation.expires_at).toLocaleDateString('pt-BR')}
                     </p>
                   )}
                   
                   {canRespond(invitation.status, invitation.expires_at) && (
-                    <div className="flex space-x-2">
+                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                       <Button
                         size="sm"
                         onClick={() => handleAcceptInvitation(invitation.id)}
                         disabled={submitting}
+                        className="w-full sm:w-auto"
                       >
                         <Check className="mr-1 h-4 w-4" />
                         Aceitar
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button variant="outline" size="sm" disabled={submitting}>
+                          <Button variant="outline" size="sm" disabled={submitting} className="w-full sm:w-auto">
                             <X className="mr-1 h-4 w-4" />
                             Rejeitar
                           </Button>

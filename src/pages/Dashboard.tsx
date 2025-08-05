@@ -134,24 +134,26 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground">
             Bem-vindo, {user?.user_metadata?.display_name || user?.email}
           </p>
         </div>
-        <div className="flex items-center space-x-2">
-          <Link to="/accounts">
-            <Button variant="outline" size="sm">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          <Link to="/accounts" className="w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
-              Criar Conta
+              <span className="hidden sm:inline">Criar Conta</span>
+              <span className="sm:hidden">Nova Conta</span>
             </Button>
           </Link>
-          <Link to="/transactions">
-            <Button size="sm">
+          <Link to="/transactions" className="w-full sm:w-auto">
+            <Button size="sm" className="w-full sm:w-auto">
               <PlusCircle className="h-4 w-4 mr-2" />
-              Fazer Lançamento
+              <span className="hidden sm:inline">Fazer Lançamento</span>
+              <span className="sm:hidden">Novo Lançamento</span>
             </Button>
           </Link>
         </div>
@@ -217,11 +219,11 @@ export default function Dashboard() {
               </p>
             ) : (
               data.recentTransactions.map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">{transaction.description}</p>
-                    <div className="flex items-center space-x-2">
-                      <p className="text-xs text-muted-foreground">
+                <div key={transaction.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+                  <div className="space-y-1 min-w-0 flex-1">
+                    <p className="text-sm font-medium truncate">{transaction.description}</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                      <p className="text-xs text-muted-foreground truncate">
                         {transaction.bank_account.name}
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -229,8 +231,8 @@ export default function Dashboard() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge variant={transaction.type === 'income' ? 'default' : 'destructive'}>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-2">
+                    <Badge variant={transaction.type === 'income' ? 'default' : 'destructive'} className="self-start sm:self-center">
                       {transaction.type === 'income' ? 'Receita' : 'Despesa'}
                     </Badge>
                     <p className={`text-sm font-medium ${

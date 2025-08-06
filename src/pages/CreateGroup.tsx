@@ -1,0 +1,161 @@
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
+import { Users, ArrowLeft } from 'lucide-react';
+
+export default function CreateGroup() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: ''
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !formData.name.trim()) return;
+
+    try {
+      setLoading(true);
+
+      // Criar o grupo
+      const { data: groupData, error: groupError } = await supabase
+        .from('groups')
+        .insert({
+          name: formData.name.trim(),
+          description: formData.description.trim() || null,
+          admin_id: user.id
+        })
+        .select()
+        .single();
+
+      if (groupError) throw groupError;
+
+      // Adicionar o admin como membro do grupo
+      const { error: memberError } = await supabase
+        .from('group_members')
+        .insert({
+          group_id: groupData.id,
+          user_id: user.id,
+          permission_level: 'admin'
+        });
+
+      if (memberError) throw memberError;
+
+      toast({
+        title: 'Sucesso',
+        description: 'Grupo criado com sucesso!',
+      });
+
+      navigate('/group-members');
+    } catch (error) {
+      console.error('Erro ao criar grupo:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível criar o grupo.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (field: keyof typeof formData) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: e.target.value
+    }));
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="flex items-center space-x-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Voltar</span>
+          </Button>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">Criar Grupo</h1>
+            <p className="text-muted-foreground">Configure seu novo grupo financeiro</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-md mx-auto">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center space-x-2">
+              <Users className="h-5 w-5 text-primary" />
+              <CardTitle>Novo Grupo</CardTitle>
+            </div>
+            <CardDescription>
+              Crie um grupo para gerenciar finanças em conjunto com outras pessoas.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nome do Grupo *</Label>
+                <Input
+                  id="name"
+                  placeholder="Ex: Família Silva, Apartamento 101..."
+                  value={formData.name}
+                  onChange={handleInputChange('name')}
+                  required
+                  maxLength={100}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">Descrição (opcional)</Label>
+                <Textarea
+                  id="description"
+                  placeholder="Descreva o propósito do grupo..."
+                  value={formData.description}
+                  onChange={handleInputChange('description')}
+                  maxLength={500}
+                  rows={3}
+                />
+              </div>
+
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate(-1)}
+                  className="w-full sm:w-auto"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={loading || !formData.name.trim()}
+                  className="w-full sm:w-auto"
+                >
+                  {loading ? 'Criando...' : 'Criar Grupo'}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

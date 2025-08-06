@@ -11,6 +11,7 @@ import Auth from "./pages/Auth";
 import Accounts from "./pages/Accounts";
 import Transactions from "./pages/Transactions";
 import GroupMembers from "./pages/GroupMembers";
+import CreateGroup from "./pages/CreateGroup";
 import Invitations from "./pages/Invitations";
 import NotFound from "./pages/NotFound";
 
@@ -45,6 +46,11 @@ const App = () => (
               <Route path="/group-members" element={
                 <Layout>
                   <GroupMembers />
+                </Layout>
+              } />
+              <Route path="/create-group" element={
+                <Layout>
+                  <CreateGroup />
                 </Layout>
               } />
               <Route path="/invitations" element={

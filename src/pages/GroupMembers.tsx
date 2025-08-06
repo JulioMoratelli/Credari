@@ -303,13 +303,16 @@ export default function GroupMembers() {
       <div className="container mx-auto p-6">
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center">
-              <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Nenhum grupo encontrado</h3>
-              <p className="text-muted-foreground">
-                Você precisa criar um grupo primeiro para gerenciar membros.
-              </p>
-            </div>
+          <div className="text-center">
+            <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Nenhum grupo encontrado</h3>
+            <p className="text-muted-foreground mb-4">
+              Você precisa criar um grupo primeiro para gerenciar membros.
+            </p>
+            <Button asChild>
+              <a href="/create-group">Criar Grupo</a>
+            </Button>
+          </div>
           </CardContent>
         </Card>
       </div>

@@ -6,8 +6,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, Check, X, Clock, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Mail, Check, X, Clock, UserPlus, ArrowLeft } from 'lucide-react';
 
 interface GroupInvitation {
   id: string;
@@ -183,11 +183,22 @@ export default function Invitations() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Convites de Grupo</h1>
-          <p className="text-muted-foreground">
-            Gerencie os convites para participar de grupos
-          </p>
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="flex items-center space-x-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Voltar</span>
+          </Button>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">Convites de Grupo</h1>
+            <p className="text-muted-foreground">
+              Gerencie os convites para participar de grupos
+            </p>
+          </div>
         </div>
         <Button onClick={() => navigate('/group-members')} className="w-full sm:w-auto">
           <UserPlus className="mr-2 h-4 w-4" />

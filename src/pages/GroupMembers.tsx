@@ -8,7 +8,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { Users, UserPlus, Trash2, Copy, Crown, Mail, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users, UserPlus, Trash2, Copy, Crown, Mail, X, ArrowLeft } from 'lucide-react';
 
 interface GroupMember {
   id: string;
@@ -40,6 +41,7 @@ interface GroupInvitation {
 export default function GroupMembers() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [group, setGroup] = useState<Group | null>(null);
   const [members, setMembers] = useState<GroupMember[]>([]);
   const [invitations, setInvitations] = useState<GroupInvitation[]>([]);
@@ -322,9 +324,20 @@ export default function GroupMembers() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Membros do Grupo</h1>
-          <p className="text-muted-foreground">{group.name}</p>
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="flex items-center space-x-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Voltar</span>
+          </Button>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">Membros do Grupo</h1>
+            <p className="text-muted-foreground">{group.name}</p>
+          </div>
         </div>
         <Dialog open={isAddMemberOpen} onOpenChange={setIsAddMemberOpen}>
           <DialogTrigger asChild>

@@ -9,7 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, CreditCard, DollarSign } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, CreditCard, DollarSign, ArrowLeft } from 'lucide-react';
 
 interface BankAccount {
   id: string;
@@ -23,6 +24,7 @@ interface BankAccount {
 export default function Accounts() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -136,7 +138,20 @@ export default function Accounts() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl md:text-3xl font-bold">Contas Bancárias</h1>
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="flex items-center space-x-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Voltar</span>
+          </Button>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">Contas Bancárias</h1>
+          </div>
+        </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button className="w-full sm:w-auto">

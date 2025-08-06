@@ -10,7 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, TrendingUp, TrendingDown, Calendar, Filter, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, TrendingUp, TrendingDown, Calendar, Filter, Trash2, ArrowLeft } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 interface Transaction {
@@ -31,6 +32,7 @@ interface BankAccount {
 export default function Transactions() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
   const [loading, setLoading] = useState(true);
@@ -218,7 +220,20 @@ export default function Transactions() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <h1 className="text-2xl md:text-3xl font-bold">Transações</h1>
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="flex items-center space-x-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Voltar</span>
+          </Button>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">Transações</h1>
+          </div>
+        </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <Select value={filter} onValueChange={setFilter}>
             <SelectTrigger className="w-full sm:w-40">

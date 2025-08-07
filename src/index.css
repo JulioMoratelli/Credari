@@ -136,7 +136,8 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground transition-smooth;
+    @apply bg-background text-foreground;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .gradient-bg {
@@ -158,7 +159,7 @@ All colors MUST be HSL.
   .hover-glow:hover {
     box-shadow: var(--shadow-glow);
     transform: translateY(-2px);
-    transition: var(--transition-smooth);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .animate-bounce-subtle {

@@ -4,9 +4,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { DollarSign, TrendingUp, TrendingDown, CreditCard, Plus, PlusCircle } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, CreditCard, Plus, PlusCircle, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
+import AIInsights from '@/components/AIInsights';
+import ExpenseChart from '@/components/ExpenseChart';
 
 interface DashboardData {
   totalBalance: number;
@@ -133,12 +135,15 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Bem-vindo, {user?.user_metadata?.display_name || user?.email}
+        <div className="space-y-2">
+          <h1 className="text-3xl md:text-4xl font-bold gradient-bg bg-clip-text text-transparent">
+            Dashboard Inteligente
+          </h1>
+          <p className="text-muted-foreground flex items-center space-x-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <span>Bem-vindo, {user?.user_metadata?.display_name || user?.email}</span>
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -159,84 +164,109 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="hover-glow transition-all duration-300 shadow-elegant">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Saldo Total</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <DollarSign className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(data.totalBalance)}</div>
+            <div className="text-2xl font-bold gradient-bg bg-clip-text text-transparent">
+              {formatCurrency(data.totalBalance)}
+            </div>
             <p className="text-xs text-muted-foreground">
               Em {data.accountsCount} conta{data.accountsCount !== 1 ? 's' : ''}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover-glow transition-all duration-300 shadow-elegant">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Receitas (mês)</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-600" />
+            <CardTitle className="text-sm font-medium">Receitas</CardTitle>
+            <TrendingUp className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{formatCurrency(data.totalIncome)}</div>
+            <div className="text-2xl font-bold text-success">{formatCurrency(data.totalIncome)}</div>
             <p className="text-xs text-muted-foreground">Mês atual</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover-glow transition-all duration-300 shadow-elegant">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Despesas (mês)</CardTitle>
-            <TrendingDown className="h-4 w-4 text-red-600" />
+            <CardTitle className="text-sm font-medium">Despesas</CardTitle>
+            <TrendingDown className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{formatCurrency(data.totalExpenses)}</div>
+            <div className="text-2xl font-bold text-destructive">{formatCurrency(data.totalExpenses)}</div>
             <p className="text-xs text-muted-foreground">Mês atual</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover-glow transition-all duration-300 shadow-elegant">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Contas Bancárias</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Contas</CardTitle>
+            <CreditCard className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.accountsCount}</div>
-            <p className="text-xs text-muted-foreground">Contas cadastradas</p>
+            <p className="text-xs text-muted-foreground">Cadastradas</p>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Transações Recentes</CardTitle>
+      {/* Grid de Insights e Gráficos */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-1">
+          <AIInsights />
+        </div>
+        <div className="lg:col-span-2">
+          <ExpenseChart />
+        </div>
+      </div>
+
+      <Card className="hover-glow transition-all duration-300 shadow-elegant">
+        <CardHeader className="gradient-bg text-white">
+          <CardTitle className="flex items-center space-x-2">
+            <TrendingUp className="h-5 w-5" />
+            <span>Transações Recentes</span>
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
+        <CardContent className="p-6">
+          <div className="space-y-4">
             {data.recentTransactions.length === 0 ? (
-              <p className="text-muted-foreground text-center py-4">
-                Nenhuma transação encontrada.
-              </p>
+              <div className="text-center py-8">
+                <TrendingUp className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">
+                  Nenhuma transação encontrada.
+                </p>
+              </div>
             ) : (
-              data.recentTransactions.map((transaction) => (
-                <div key={transaction.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+              data.recentTransactions.map((transaction, index) => (
+                <div 
+                  key={transaction.id} 
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
                   <div className="space-y-1 min-w-0 flex-1">
-                    <p className="text-sm font-medium truncate">{transaction.description}</p>
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                      <p className="text-xs text-muted-foreground truncate">
+                    <p className="font-medium truncate">{transaction.description}</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-sm text-muted-foreground">
+                      <span className="truncate">
                         {transaction.bank_account.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
+                      </span>
+                      <span>
                         {new Date(transaction.transaction_date).toLocaleDateString('pt-BR')}
-                      </p>
+                      </span>
                     </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-2">
-                    <Badge variant={transaction.type === 'income' ? 'default' : 'destructive'} className="self-start sm:self-center">
-                      {transaction.type === 'income' ? 'Receita' : 'Despesa'}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                    <Badge 
+                      variant={transaction.type === 'income' ? 'default' : 'destructive'} 
+                      className="self-start sm:self-center"
+                    >
+                      {transaction.type === 'income' ? '💰 Receita' : '💸 Despesa'}
                     </Badge>
-                    <p className={`text-sm font-medium ${
-                      transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                    <p className={`text-lg font-bold ${
+                      transaction.type === 'income' ? 'text-success' : 'text-destructive'
                     }`}>
                       {transaction.type === 'income' ? '+' : '-'}{formatCurrency(Number(transaction.amount))}
                     </p>

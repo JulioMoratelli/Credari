@@ -11,8 +11,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { Plus, TrendingUp, TrendingDown, Calendar, Filter, Trash2, ArrowLeft } from 'lucide-react';
+import { Plus, TrendingUp, TrendingDown, Calendar, Filter, Trash2, ArrowLeft, Sparkles } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import SmartTransactionForm from '@/components/SmartTransactionForm';
 
 interface Transaction {
   id: string;
@@ -29,12 +30,18 @@ interface BankAccount {
   name: string;
 }
 
+interface Group {
+  id: string;
+  name: string;
+}
+
 export default function Transactions() {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
+  const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -64,6 +71,23 @@ export default function Transactions() {
 
       if (accountsError) throw accountsError;
       setAccounts(accountsData || []);
+
+      // Carregar grupos do usuário
+      const { data: groupsData, error: groupsError } = await supabase
+        .from('groups')
+        .select('id, name')
+        .or(`admin_id.eq.${user?.id},id.in.(${
+          // Buscar grupos onde o usuário é membro
+          await supabase
+            .from('group_members')
+            .select('group_id')
+            .eq('user_id', user?.id)
+            .then(({ data }) => data?.map(gm => gm.group_id).join(',') || '')
+        })`);
+
+      if (!groupsError && groupsData) {
+        setGroups(groupsData);
+      }
 
       // Carregar transações
       const { data: transactionsData, error: transactionsError } = await supabase
@@ -230,8 +254,14 @@ export default function Transactions() {
             <ArrowLeft className="h-4 w-4" />
             <span>Voltar</span>
           </Button>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold">Transações</h1>
+          <div className="space-y-2">
+            <h1 className="text-2xl md:text-3xl font-bold gradient-bg bg-clip-text text-transparent">
+              Lançamentos Inteligentes
+            </h1>
+            <p className="text-muted-foreground flex items-center space-x-2">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span>Gerencie suas finanças de forma inteligente</span>
+            </p>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -249,108 +279,22 @@ export default function Transactions() {
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="w-full sm:w-auto">
-                <Plus className="mr-2 h-4 w-4" />
-                <span className="hidden sm:inline">Nova Transação</span>
-                <span className="sm:hidden">Nova</span>
+              <Button className="w-full sm:w-auto gradient-bg hover:opacity-90">
+                <Sparkles className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Novo Lançamento</span>
+                <span className="sm:hidden">Novo</span>
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Criar Nova Transação</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="description">Descrição</Label>
-                  <Input
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Ex: Compra no supermercado"
-                    required
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="amount">Valor</Label>
-                    <Input
-                      id="amount"
-                      type="number"
-                      step="0.01"
-                      value={formData.amount}
-                      onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                      placeholder="0,00"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="type">Tipo</Label>
-                    <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="income">Receita</SelectItem>
-                        <SelectItem value="expense">Despesa</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="category">Categoria</Label>
-                  <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione uma categoria" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="bank_account_id">Conta Bancária</Label>
-                  <Select value={formData.bank_account_id} onValueChange={(value) => setFormData({ ...formData, bank_account_id: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione uma conta" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {accounts.map((account) => (
-                        <SelectItem key={account.id} value={account.id}>
-                          {account.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="transaction_date">Data</Label>
-                  <Input
-                    id="transaction_date"
-                    type="date"
-                    value={formData.transaction_date}
-                    onChange={(e) => setFormData({ ...formData, transaction_date: e.target.value })}
-                    required
-                  />
-                </div>
-                
-                <div className="flex justify-end space-x-2">
-                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit" disabled={submitting || accounts.length === 0}>
-                    {submitting ? 'Criando...' : 'Criar Transação'}
-                  </Button>
-                </div>
-              </form>
+            <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+              <SmartTransactionForm
+                accounts={accounts}
+                groups={groups}
+                onSuccess={() => {
+                  setIsDialogOpen(false);
+                  loadData();
+                }}
+                onCancel={() => setIsDialogOpen(false)}
+              />
             </DialogContent>
           </Dialog>
         </div>

@@ -58,6 +58,59 @@ export type Database = {
           },
         ]
       }
+      financial_goals: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          current_amount: number | null
+          description: string | null
+          group_id: string | null
+          id: string
+          is_shared: boolean | null
+          target_amount: number
+          target_date: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          current_amount?: number | null
+          description?: string | null
+          group_id?: string | null
+          id?: string
+          is_shared?: boolean | null
+          target_amount: number
+          target_date?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          current_amount?: number | null
+          description?: string | null
+          group_id?: string | null
+          id?: string
+          is_shared?: boolean | null
+          target_amount?: number
+          target_date?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_goals_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       group_invitations: {
         Row: {
           created_at: string
@@ -195,7 +248,9 @@ export type Database = {
           category: string | null
           created_at: string
           description: string | null
+          group_id: string | null
           id: string
+          is_shared: boolean | null
           transaction_date: string
           type: string
           updated_at: string
@@ -207,7 +262,9 @@ export type Database = {
           category?: string | null
           created_at?: string
           description?: string | null
+          group_id?: string | null
           id?: string
+          is_shared?: boolean | null
           transaction_date?: string
           type: string
           updated_at?: string
@@ -219,7 +276,9 @@ export type Database = {
           category?: string | null
           created_at?: string
           description?: string | null
+          group_id?: string | null
           id?: string
+          is_shared?: boolean | null
           transaction_date?: string
           type?: string
           updated_at?: string
@@ -231,6 +290,13 @@ export type Database = {
             columns: ["bank_account_id"]
             isOneToOne: false
             referencedRelation: "bank_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
             referencedColumns: ["id"]
           },
         ]

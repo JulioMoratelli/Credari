@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { Users, ArrowLeft } from 'lucide-react';
 
 export default function CreateGroup() {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -22,10 +22,23 @@ export default function CreateGroup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !formData.name.trim()) return;
+    if (!user || !session || !formData.name.trim()) return;
 
     try {
       setLoading(true);
+
+      // Debug: verificar estado da autenticação
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      console.log('Estado da sessão:', { session, sessionError });
+      console.log('Usuário atual:', user);
+      console.log('Session user:', session?.user);
+
+      if (!session?.user) {
+        throw new Error('Usuário não está autenticado. Faça login novamente.');
+      }
+
+      // Garantir que o token está atualizado
+      await supabase.auth.refreshSession();
 
       console.log('Tentando criar grupo para usuário:', user.id);
       console.log('Dados do grupo:', {

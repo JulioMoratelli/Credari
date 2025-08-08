@@ -8,7 +8,6 @@ import { DollarSign, TrendingUp, TrendingDown, CreditCard, Plus, PlusCircle, Spa
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import AIInsights from '@/components/AIInsights';
-import ExpenseChart from '@/components/ExpenseChart';
 
 interface DashboardData {
   totalBalance: number;
@@ -214,14 +213,9 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Grid de Insights e Gráficos */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-1">
-          <AIInsights />
-        </div>
-        <div className="lg:col-span-2">
-          <ExpenseChart />
-        </div>
+      {/* Grid de Insights */}
+      <div className="grid gap-6 lg:grid-cols-1">
+        <AIInsights />
       </div>
 
       <Card className="hover-glow transition-all duration-300 shadow-elegant">

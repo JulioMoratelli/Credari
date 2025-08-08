@@ -27,6 +27,41 @@ export default function CreateGroup() {
     try {
       setLoading(true);
 
+      console.log('Tentando criar grupo para usuário:', user.id);
+      console.log('Dados do grupo:', {
+        name: formData.name.trim(),
+        description: formData.description.trim() || null,
+        admin_id: user.id
+      });
+
+      // Verificar se o usuário tem perfil
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profileError && profileError.code !== 'PGRST116') {
+        console.error('Erro ao verificar perfil:', profileError);
+        throw new Error('Erro ao verificar perfil do usuário');
+      }
+
+      if (!profile) {
+        console.log('Criando perfil para o usuário...');
+        const { error: createProfileError } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: user.id,
+            email: user.email,
+            display_name: user.user_metadata?.display_name || user.email?.split('@')[0]
+          });
+
+        if (createProfileError) {
+          console.error('Erro ao criar perfil:', createProfileError);
+          throw new Error('Erro ao criar perfil do usuário');
+        }
+      }
+
       // Criar o grupo
       const { data: groupData, error: groupError } = await supabase
         .from('groups')
@@ -38,7 +73,12 @@ export default function CreateGroup() {
         .select()
         .single();
 
-      if (groupError) throw groupError;
+      if (groupError) {
+        console.error('Erro ao criar grupo:', groupError);
+        throw groupError;
+      }
+
+      console.log('Grupo criado com sucesso:', groupData);
 
       // Adicionar o admin como membro do grupo
       const { error: memberError } = await supabase
@@ -49,19 +89,23 @@ export default function CreateGroup() {
           permission_level: 'admin'
         });
 
-      if (memberError) throw memberError;
+      if (memberError) {
+        console.error('Erro ao adicionar membro:', memberError);
+        // Não falhar se não conseguir adicionar como membro, pois ele já é admin
+        console.warn('Aviso: Não foi possível adicionar usuário como membro, mas o grupo foi criado');
+      }
 
       toast({
-        title: 'Sucesso',
+        title: 'Sucesso!',
         description: 'Grupo criado com sucesso!',
       });
 
       navigate('/group-members');
-    } catch (error) {
-      console.error('Erro ao criar grupo:', error);
+    } catch (error: any) {
+      console.error('Erro completo ao criar grupo:', error);
       toast({
         title: 'Erro',
-        description: 'Não foi possível criar o grupo.',
+        description: error.message || 'Não foi possível criar o grupo. Tente novamente.',
         variant: 'destructive',
       });
     } finally {

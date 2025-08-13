@@ -4,445 +4,415 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[]
+  | Json[];
 
 export type Database = {
   // Allows to automatically instanciate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.12 (cd3cf9e)"
-  }
+    PostgrestVersion: "12.2.12 (cd3cf9e)";
+  };
   public: {
     Tables: {
       bank_accounts: {
         Row: {
-          created_at: string
-          current_balance: number | null
-          description: string | null
-          group_id: string | null
-          id: string
-          initial_balance: number | null
-          name: string
-          updated_at: string
-          user_id: string | null
-        }
+          created_at: string;
+          current_balance: number | null;
+          description: string | null;
+          // group_id: string | null;
+          id: string;
+          initial_balance: number | null;
+          name: string;
+          updated_at: string;
+          user_id: string | null;
+        };
         Insert: {
-          created_at?: string
-          current_balance?: number | null
-          description?: string | null
-          group_id?: string | null
-          id?: string
-          initial_balance?: number | null
-          name: string
-          updated_at?: string
-          user_id?: string | null
-        }
+          created_at?: string;
+          current_balance?: number | null;
+          description?: string | null;
+          // group_id?: string | null;
+          id?: string;
+          initial_balance?: number | null;
+          name: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
         Update: {
-          created_at?: string
-          current_balance?: number | null
-          description?: string | null
-          group_id?: string | null
-          id?: string
-          initial_balance?: number | null
-          name?: string
-          updated_at?: string
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "bank_accounts_group_id_fkey"
-            columns: ["group_id"]
-            isOneToOne: false
-            referencedRelation: "groups"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+          created_at?: string;
+          current_balance?: number | null;
+          description?: string | null;
+          // group_id?: string | null;
+          id?: string;
+          initial_balance?: number | null;
+          name?: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
       financial_goals: {
         Row: {
-          category: string | null
-          created_at: string | null
-          current_amount: number | null
-          description: string | null
-          group_id: string | null
-          id: string
-          is_shared: boolean | null
-          target_amount: number
-          target_date: string | null
-          title: string
-          updated_at: string | null
-          user_id: string
-        }
+          category: string | null;
+          created_at: string | null;
+          current_amount: number | null;
+          description: string | null;
+          // group_id: string | null;
+          id: string;
+          // is_shared: boolean | null;
+          target_amount: number;
+          target_date: string | null;
+          title: string;
+          updated_at: string | null;
+          user_id: string;
+        };
         Insert: {
-          category?: string | null
-          created_at?: string | null
-          current_amount?: number | null
-          description?: string | null
-          group_id?: string | null
-          id?: string
-          is_shared?: boolean | null
-          target_amount: number
-          target_date?: string | null
-          title: string
-          updated_at?: string | null
-          user_id: string
-        }
+          category?: string | null;
+          created_at?: string | null;
+          current_amount?: number | null;
+          description?: string | null;
+          // group_id?: string | null;
+          id?: string;
+          // is_shared?: boolean | null;
+          target_amount: number;
+          target_date?: string | null;
+          title: string;
+          updated_at?: string | null;
+          user_id: string;
+        };
         Update: {
-          category?: string | null
-          created_at?: string | null
-          current_amount?: number | null
-          description?: string | null
-          group_id?: string | null
-          id?: string
-          is_shared?: boolean | null
-          target_amount?: number
-          target_date?: string | null
-          title?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "financial_goals_group_id_fkey"
-            columns: ["group_id"]
-            isOneToOne: false
-            referencedRelation: "groups"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      group_invitations: {
-        Row: {
-          created_at: string
-          expires_at: string
-          group_id: string
-          id: string
-          invited_by: string
-          invited_email: string
-          responded_at: string | null
-          status: string
-        }
-        Insert: {
-          created_at?: string
-          expires_at?: string
-          group_id: string
-          id?: string
-          invited_by: string
-          invited_email: string
-          responded_at?: string | null
-          status?: string
-        }
-        Update: {
-          created_at?: string
-          expires_at?: string
-          group_id?: string
-          id?: string
-          invited_by?: string
-          invited_email?: string
-          responded_at?: string | null
-          status?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "group_invitations_group_id_fkey"
-            columns: ["group_id"]
-            isOneToOne: false
-            referencedRelation: "groups"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      group_members: {
-        Row: {
-          group_id: string
-          id: string
-          joined_at: string
-          permission_level: string
-          user_id: string
-        }
-        Insert: {
-          group_id: string
-          id?: string
-          joined_at?: string
-          permission_level?: string
-          user_id: string
-        }
-        Update: {
-          group_id?: string
-          id?: string
-          joined_at?: string
-          permission_level?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "group_members_group_id_fkey"
-            columns: ["group_id"]
-            isOneToOne: false
-            referencedRelation: "groups"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      groups: {
-        Row: {
-          admin_id: string
-          created_at: string
-          description: string | null
-          id: string
-          invite_code: string | null
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          admin_id: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          invite_code?: string | null
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          admin_id?: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          invite_code?: string | null
-          name?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
+          category?: string | null;
+          created_at?: string | null;
+          current_amount?: number | null;
+          description?: string | null;
+          // group_id?: string | null;
+          id?: string;
+          // is_shared?: boolean | null;
+          target_amount?: number;
+          target_date?: string | null;
+          title?: string;
+          updated_at?: string | null;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      // group_invitations: {
+      //   Row: {
+      //     created_at: string
+      //     expires_at: string
+      //     group_id: string
+      //     id: string
+      //     invited_by: string
+      //     invited_email: string
+      //     responded_at: string | null
+      //     status: string
+      //   }
+      //   Insert: {
+      //     created_at?: string
+      //     expires_at?: string
+      //     group_id: string
+      //     id?: string
+      //     invited_by: string
+      //     invited_email: string
+      //     responded_at?: string | null
+      //     status?: string
+      //   }
+      //   Update: {
+      //     created_at?: string
+      //     expires_at?: string
+      //     group_id?: string
+      //     id?: string
+      //     invited_by?: string
+      //     invited_email?: string
+      //     responded_at?: string | null
+      //     status?: string
+      //   }
+      //   Relationships: [
+      //     {
+      //       foreignKeyName: "group_invitations_group_id_fkey"
+      //       columns: ["group_id"]
+      //       isOneToOne: false
+      //       referencedRelation: "groups"
+      //       referencedColumns: ["id"]
+      //     },
+      //   ]
+      // }
+      // group_members: {
+      //   Row: {
+      //     group_id: string
+      //     id: string
+      //     joined_at: string
+      //     permission_level: string
+      //     user_id: string
+      //   }
+      //   Insert: {
+      //     group_id: string
+      //     id?: string
+      //     joined_at?: string
+      //     permission_level?: string
+      //     user_id: string
+      //   }
+      //   Update: {
+      //     group_id?: string
+      //     id?: string
+      //     joined_at?: string
+      //     permission_level?: string
+      //     user_id?: string
+      //   }
+      //   Relationships: [
+      //     {
+      //       foreignKeyName: "group_members_group_id_fkey"
+      //       columns: ["group_id"]
+      //       isOneToOne: false
+      //       referencedRelation: "groups"
+      //       referencedColumns: ["id"]
+      //     },
+      //   ]
+      // }
+      // groups: {
+      //   Row: {
+      //     admin_id: string
+      //     created_at: string
+      //     description: string | null
+      //     id: string
+      //     invite_code: string | null
+      //     name: string
+      //     updated_at: string
+      //   }
+      //   Insert: {
+      //     admin_id: string
+      //     created_at?: string
+      //     description?: string | null
+      //     id?: string
+      //     invite_code?: string | null
+      //     name: string
+      //     updated_at?: string
+      //   }
+      //   Update: {
+      //     admin_id?: string
+      //     created_at?: string
+      //     description?: string | null
+      //     id?: string
+      //     invite_code?: string | null
+      //     name?: string
+      //     updated_at?: string
+      //   }
+      //   Relationships: []
+      // }
       profiles: {
         Row: {
-          created_at: string
-          display_name: string | null
-          email: string | null
-          id: string
-          updated_at: string
-          user_id: string
-        }
+          created_at: string;
+          display_name: string | null;
+          email: string | null;
+          id: string;
+          updated_at: string;
+          user_id: string;
+        };
         Insert: {
-          created_at?: string
-          display_name?: string | null
-          email?: string | null
-          id?: string
-          updated_at?: string
-          user_id: string
-        }
+          created_at?: string;
+          display_name?: string | null;
+          email?: string | null;
+          id?: string;
+          updated_at?: string;
+          user_id: string;
+        };
         Update: {
-          created_at?: string
-          display_name?: string | null
-          email?: string | null
-          id?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          display_name?: string | null;
+          email?: string | null;
+          id?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       transactions: {
         Row: {
-          amount: number
-          bank_account_id: string
-          category: string | null
-          created_at: string
-          description: string | null
-          group_id: string | null
-          id: string
-          is_shared: boolean | null
-          transaction_date: string
-          type: string
-          updated_at: string
-          user_id: string
-        }
+          amount: number;
+          bank_account_id: string;
+          category: string | null;
+          created_at: string;
+          description: string | null;
+          // group_id: string | null;
+          id: string;
+          // is_shared: boolean | null;
+          transaction_date: string;
+          type: string;
+          updated_at: string;
+          user_id: string;
+        };
         Insert: {
-          amount: number
-          bank_account_id: string
-          category?: string | null
-          created_at?: string
-          description?: string | null
-          group_id?: string | null
-          id?: string
-          is_shared?: boolean | null
-          transaction_date?: string
-          type: string
-          updated_at?: string
-          user_id: string
-        }
+          amount: number;
+          bank_account_id: string;
+          category?: string | null;
+          created_at?: string;
+          description?: string | null;
+          // group_id?: string | null;
+          id?: string;
+          // is_shared?: boolean | null;
+          transaction_date?: string;
+          type: string;
+          updated_at?: string;
+          user_id: string;
+        };
         Update: {
-          amount?: number
-          bank_account_id?: string
-          category?: string | null
-          created_at?: string
-          description?: string | null
-          group_id?: string | null
-          id?: string
-          is_shared?: boolean | null
-          transaction_date?: string
-          type?: string
-          updated_at?: string
-          user_id?: string
-        }
+          amount?: number;
+          bank_account_id?: string;
+          category?: string | null;
+          created_at?: string;
+          description?: string | null;
+          // group_id?: string | null;
+          id?: string;
+          // is_shared?: boolean | null;
+          transaction_date?: string;
+          type?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "transactions_bank_account_id_fkey"
-            columns: ["bank_account_id"]
-            isOneToOne: false
-            referencedRelation: "bank_accounts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transactions_group_id_fkey"
-            columns: ["group_id"]
-            isOneToOne: false
-            referencedRelation: "groups"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-    }
+            foreignKeyName: "transactions_bank_account_id_fkey";
+            columns: ["bank_account_id"];
+            isOneToOne: false;
+            referencedRelation: "bank_accounts";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      accept_group_invitation: {
-        Args: { invitation_id: string }
-        Returns: boolean
-      }
-      user_can_view_group: {
-        Args: { group_id_param: string }
-        Returns: boolean
-      }
-    }
+      [_ in never]: never;
+    };
     Enums: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<
+  keyof Database,
+  "public"
+>];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never = never
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+      Row: infer R;
     }
     ? R
     : never
   : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
+      DefaultSchema["Views"])
+  ? (DefaultSchema["Tables"] &
+      DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+      Row: infer R;
+    }
+    ? R
     : never
+  : never;
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never = never
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+      Insert: infer I;
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+      Insert: infer I;
+    }
+    ? I
     : never
+  : never;
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never = never
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+      Update: infer U;
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+      Update: infer U;
+    }
+    ? U
     : never
+  : never;
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never = never
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+  ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never = never
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+  ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  : never;
 
 export const Constants = {
   public: {
     Enums: {},
   },
-} as const
+} as const;

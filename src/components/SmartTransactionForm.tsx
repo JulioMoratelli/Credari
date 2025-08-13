@@ -9,10 +9,10 @@ import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Users, 
-  User, 
-  Sparkles, 
+import {
+  Users,
+  User,
+  Sparkles,
   Calculator,
   Calendar,
   Tag
@@ -20,16 +20,16 @@ import {
 
 interface SmartTransactionFormProps {
   accounts: Array<{ id: string; name: string }>;
-  groups: Array<{ id: string; name: string }>;
+  // groups: Array<{ id: string; name: string }>;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-export default function SmartTransactionForm({ 
-  accounts, 
-  groups, 
-  onSuccess, 
-  onCancel 
+export default function SmartTransactionForm({
+  accounts,
+  // groups, 
+  onSuccess,
+  onCancel
 }: SmartTransactionFormProps) {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -40,7 +40,7 @@ export default function SmartTransactionForm({
     type: '',
     category: '',
     bank_account_id: '',
-    group_id: '',
+    // group_id: '',
     transaction_date: new Date().toISOString().split('T')[0],
     is_shared: false,
   });
@@ -70,10 +70,10 @@ export default function SmartTransactionForm({
         amount: parseFloat(formData.amount),
         type: formData.type,
         category: formData.category,
-        bank_account_id: formData.is_shared ? null : formData.bank_account_id,
-        group_id: formData.is_shared ? formData.group_id : null,
+        bank_account_id: formData.bank_account_id,
+        // group_id: formData.is_shared ? formData.group_id : null,
         transaction_date: formData.transaction_date,
-        is_shared: formData.is_shared,
+        // is_shared: formData.is_shared,
         user_id: user.id,
       };
 
@@ -85,7 +85,7 @@ export default function SmartTransactionForm({
 
       toast({
         title: 'Sucesso!',
-        description: `Transação ${formData.is_shared ? 'compartilhada' : 'pessoal'} criada com sucesso!`,
+        description: `Transação criada com sucesso!`,
       });
 
       onSuccess();
@@ -120,7 +120,7 @@ export default function SmartTransactionForm({
 
   const handleDescriptionChange = (value: string) => {
     setFormData(prev => ({ ...prev, description: value }));
-    
+
     // Sugestão inteligente de categoria
     const suggestedCategory = getSuggestedCategory(value);
     if (suggestedCategory && !formData.category) {
@@ -142,10 +142,10 @@ export default function SmartTransactionForm({
           <div className="space-y-3">
             <Label className="text-base font-medium">Tipo de Transação</Label>
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <Switch
                   checked={formData.is_shared}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={(checked) =>
                     setFormData(prev => ({ ...prev, is_shared: checked }))
                   }
                 />
@@ -162,7 +162,7 @@ export default function SmartTransactionForm({
                     </>
                   )}
                 </div>
-              </div>
+              </div> */}
               <Badge variant={formData.is_shared ? "default" : "secondary"}>
                 {formData.is_shared ? "Grupo" : "Individual"}
               </Badge>
@@ -203,11 +203,11 @@ export default function SmartTransactionForm({
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label>Receita ou Despesa</Label>
-              <Select 
-                value={formData.type} 
+              <Select
+                value={formData.type}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
               >
                 <SelectTrigger>
@@ -224,8 +224,8 @@ export default function SmartTransactionForm({
           {/* Categoria com emojis */}
           <div className="space-y-2">
             <Label>Categoria</Label>
-            <Select 
-              value={formData.category} 
+            <Select
+              value={formData.category}
               onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
             >
               <SelectTrigger>
@@ -250,8 +250,8 @@ export default function SmartTransactionForm({
               {formData.is_shared ? 'Grupo' : 'Conta Bancária'}
             </Label>
             {formData.is_shared ? (
-              <Select 
-                value={formData.group_id} 
+              <Select
+                value={formData.group_id}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, group_id: value }))}
               >
                 <SelectTrigger>
@@ -269,8 +269,8 @@ export default function SmartTransactionForm({
                 </SelectContent>
               </Select>
             ) : (
-              <Select 
-                value={formData.bank_account_id} 
+              <Select
+                value={formData.bank_account_id}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, bank_account_id: value }))}
               >
                 <SelectTrigger>
@@ -307,8 +307,8 @@ export default function SmartTransactionForm({
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={loading || (formData.is_shared ? groups.length === 0 : accounts.length === 0)}
               className="gradient-bg hover:opacity-90"
             >

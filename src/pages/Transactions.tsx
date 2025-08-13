@@ -1,9 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -30,18 +27,12 @@ interface BankAccount {
   name: string;
 }
 
-interface Group {
-  id: string;
-  name: string;
-}
-
 export default function Transactions() {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
-  const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -55,13 +46,7 @@ export default function Transactions() {
   const [submitting, setSubmitting] = useState(false);
   const [filter, setFilter] = useState('all');
 
-  useEffect(() => {
-    if (user) {
-      loadData();
-    }
-  }, [user]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       // Carregar contas
       const { data: accountsData, error: accountsError } = await supabase
@@ -72,43 +57,21 @@ export default function Transactions() {
       if (accountsError) throw accountsError;
       setAccounts(accountsData || []);
 
-      // Carregar grupos do usuário
-      const { data: groupsData, error: groupsError } = await supabase
-        .from('groups')
-        .select('id, name')
-        .or(`admin_id.eq.${user?.id},id.in.(${
-          // Buscar grupos onde o usuário é membro
-          await supabase
-            .from('group_members')
-            .select('group_id')
-            .eq('user_id', user?.id)
-            .then(({ data }) => data?.map(gm => gm.group_id).join(',') || '')
-        })`);
-
-      if (!groupsError && groupsData) {
-        setGroups(groupsData);
-      }
 
       // Carregar transações
       const { data: transactionsData, error: transactionsError } = await supabase
         .from('transactions')
-        .select(`
-          id,
-          description,
-          amount,
-          type,
-          category,
-          transaction_date,
-          bank_accounts!inner(name)
-        `)
+        .select('id, description, amount, type, category, transaction_date, bank_accounts!inner(name)')
         .eq('user_id', user?.id)
         .order('transaction_date', { ascending: false });
 
       if (transactionsError) throw transactionsError;
 
+      console.log('Transações carregadas:', transactionsData);
+
       setTransactions(transactionsData?.map(t => ({
         ...t,
-        bank_account: t.bank_accounts
+        bank_account: Array.isArray(t.bank_accounts) ? t.bank_accounts[0] : t.bank_accounts
       })) || []);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -120,7 +83,13 @@ export default function Transactions() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, toast]);
+
+  useEffect(() => {
+    if (user) {
+      loadData();
+    }
+  }, [user, loadData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -276,7 +245,7 @@ export default function Transactions() {
               <SelectItem value="expense">Despesas</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="w-full sm:w-auto gradient-bg hover:opacity-90">
@@ -288,7 +257,6 @@ export default function Transactions() {
             <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
               <SmartTransactionForm
                 accounts={accounts}
-                groups={groups}
                 onSuccess={() => {
                   setIsDialogOpen(false);
                   loadData();
@@ -345,48 +313,47 @@ export default function Transactions() {
                       </div>
                     </div>
                   </div>
-                   <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                     <Badge variant={transaction.type === 'income' ? 'default' : 'destructive'} className="self-start sm:self-center">
-                       {transaction.type === 'income' ? (
-                         <TrendingUp className="mr-1 h-3 w-3" />
-                       ) : (
-                         <TrendingDown className="mr-1 h-3 w-3" />
-                       )}
-                       {transaction.type === 'income' ? 'Receita' : 'Despesa'}
-                     </Badge>
-                     <div className="flex items-center justify-between sm:justify-start gap-3">
-                       <p className={`text-lg font-bold ${
-                         transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-                       }`}>
-                         {transaction.type === 'income' ? '+' : '-'}{formatCurrency(Number(transaction.amount))}
-                       </p>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="outline" size="sm">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Excluir transação</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleDelete(transaction.id)}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                              >
-                                Excluir
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                   </div>
-                 </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                    <Badge variant={transaction.type === 'income' ? 'default' : 'destructive'} className="self-start sm:self-center">
+                      {transaction.type === 'income' ? (
+                        <TrendingUp className="mr-1 h-3 w-3" />
+                      ) : (
+                        <TrendingDown className="mr-1 h-3 w-3" />
+                      )}
+                      {transaction.type === 'income' ? 'Receita' : 'Despesa'}
+                    </Badge>
+                    <div className="flex items-center justify-between sm:justify-start gap-3">
+                      <p className={`text-lg font-bold ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                        {transaction.type === 'income' ? '+' : '-'}{formatCurrency(Number(transaction.amount))}
+                      </p>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Excluir transação</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(transaction.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           ))}

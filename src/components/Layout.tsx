@@ -46,24 +46,23 @@ export default function Layout({ children }: LayoutProps) {
     { name: 'Dashboard', href: '/', icon: Home },
     { name: 'Contas', href: '/accounts', icon: CreditCard },
     { name: 'Transações', href: '/transactions', icon: TrendingUp },
-    { name: 'Criar Grupo', href: '/create-group', icon: Users },
-    { name: 'Membros', href: '/group-members', icon: Users },
-    { name: 'Convites', href: '/invitations', icon: Mail },
+    // { name: 'Criar Grupo', href: '/create-group', icon: Users },
+    // { name: 'Membros', href: '/group-members', icon: Users },
+    // { name: 'Convites', href: '/invitations', icon: Mail },
   ];
 
   const MobileNavigationItem = ({ item, onClose }: { item: typeof navigation[0], onClose: () => void }) => {
     const Icon = item.icon;
     const isActive = location.pathname === item.href;
-    
+
     return (
       <Link
         to={item.href}
         onClick={onClose}
-        className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
-          isActive
-            ? 'bg-primary text-primary-foreground'
-            : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-        }`}
+        className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${isActive
+          ? 'bg-primary text-primary-foreground'
+          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+          }`}
       >
         <Icon size={20} />
         <span>{item.name}</span>
@@ -79,7 +78,7 @@ export default function Layout({ children }: LayoutProps) {
             {/* Logo e navegação desktop */}
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-3">
-                {location.pathname !== '/' && (
+                {/* {location.pathname !== '/' && (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -88,10 +87,10 @@ export default function Layout({ children }: LayoutProps) {
                   >
                     <ArrowLeft size={18} />
                   </Button>
-                )}
+                )} */}
                 <h1 className="text-xl md:text-2xl font-bold text-foreground">Credari</h1>
               </div>
-              
+
               {/* Navegação desktop */}
               <nav className="hidden lg:flex space-x-1">
                 {navigation.map((item) => {
@@ -101,11 +100,10 @@ export default function Layout({ children }: LayoutProps) {
                     <Link
                       key={item.name}
                       to={item.href}
-                      className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                        isActive
-                          ? 'bg-primary text-primary-foreground'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                      }`}
+                      className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                        }`}
                     >
                       <Icon size={16} />
                       <span>{item.name}</span>
@@ -118,7 +116,7 @@ export default function Layout({ children }: LayoutProps) {
             {/* Menu mobile e user menu */}
             <div className="flex items-center space-x-2">
               <ThemeToggle />
-              
+
               {/* Menu mobile */}
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
@@ -132,16 +130,16 @@ export default function Layout({ children }: LayoutProps) {
                     {/* Header do menu mobile */}
                     <div className="flex items-center justify-between pb-4 border-b">
                       <h2 className="text-lg font-semibold">Menu</h2>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => setIsMobileMenuOpen(false)}
                         className="p-2"
                       >
                         <X size={18} />
                       </Button>
                     </div>
-                    
+
                     {/* Informações do usuário */}
                     <div className="flex items-center space-x-3 py-4 border-b">
                       <Avatar className="h-10 w-10">
@@ -156,22 +154,22 @@ export default function Layout({ children }: LayoutProps) {
                         </p>
                       </div>
                     </div>
-                    
+
                     {/* Navegação mobile */}
                     <nav className="flex flex-col space-y-2 py-4 flex-1">
                       {navigation.map((item) => (
-                        <MobileNavigationItem 
-                          key={item.name} 
-                          item={item} 
-                          onClose={() => setIsMobileMenuOpen(false)} 
+                        <MobileNavigationItem
+                          key={item.name}
+                          item={item}
+                          onClose={() => setIsMobileMenuOpen(false)}
                         />
                       ))}
                     </nav>
-                    
+
                     {/* Logout */}
                     <div className="border-t pt-4">
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         onClick={() => {
                           signOut();
                           setIsMobileMenuOpen(false);

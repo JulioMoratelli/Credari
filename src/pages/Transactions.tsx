@@ -67,8 +67,6 @@ export default function Transactions() {
 
       if (transactionsError) throw transactionsError;
 
-      console.log('Transações carregadas:', transactionsData);
-
       setTransactions(transactionsData?.map(t => ({
         ...t,
         bank_account: Array.isArray(t.bank_accounts) ? t.bank_accounts[0] : t.bank_accounts

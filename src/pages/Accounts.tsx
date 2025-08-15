@@ -10,7 +10,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { Plus, CreditCard, DollarSign, ArrowLeft } from 'lucide-react';
+import { Plus, CreditCard, DollarSign, ArrowLeft, Trash2 } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle, AlertDialogTrigger } from '@radix-ui/react-alert-dialog';
+import { AlertDialogFooter, AlertDialogHeader } from '@/components/ui/alert-dialog';
 
 interface BankAccount {
   id: string;
@@ -70,7 +72,7 @@ export default function Accounts() {
     setSubmitting(true);
     try {
       const initialBalance = parseFloat(formData.initial_balance) || 0;
-      
+
       const { error } = await supabase
         .from('bank_accounts')
         .insert({
@@ -100,6 +102,34 @@ export default function Accounts() {
       });
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (accountId: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('bank_accounts')
+        .delete()
+        .eq('id', accountId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Sucesso',
+        description: 'Conta bancária excluída com sucesso!',
+      });
+
+      loadAccounts();
+    } catch (error) {
+      console.error('Erro ao excluir conta:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível excluir a conta bancária.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -174,7 +204,7 @@ export default function Accounts() {
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="description">Descrição (opcional)</Label>
                 <Textarea
@@ -185,7 +215,7 @@ export default function Accounts() {
                   rows={3}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="initial_balance">Saldo Inicial</Label>
                 <Input
@@ -197,7 +227,7 @@ export default function Accounts() {
                   placeholder="0,00"
                 />
               </div>
-              
+
               <div className="flex justify-end space-x-2">
                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                   Cancelar
@@ -260,14 +290,14 @@ export default function Accounts() {
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Saldo Inicial</span>
                     <span className="text-sm">
                       {formatCurrency(Number(account.initial_balance))}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Criada em</span>
                     <span className="text-sm">
@@ -276,6 +306,30 @@ export default function Accounts() {
                   </div>
                 </div>
               </CardContent>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Excluir conta</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Tem certeza que deseja excluir esta conta? Esta ação não pode ser desfeita.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleDelete(transaction.id)}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Excluir
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </Card>
           ))}
         </div>

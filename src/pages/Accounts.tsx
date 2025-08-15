@@ -11,7 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { Plus, CreditCard, DollarSign, ArrowLeft, Trash2 } from 'lucide-react';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle, AlertDialogTrigger } from '@radix-ui/react-alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { AlertDialogFooter, AlertDialogHeader } from '@/components/ui/alert-dialog';
 
 interface BankAccount {
@@ -106,20 +106,18 @@ export default function Accounts() {
   };
 
   const handleDelete = async (accountId: string) => {
-    if (!user) return;
-
     try {
       const { error } = await supabase
         .from('bank_accounts')
         .delete()
         .eq('id', accountId)
-        .eq('user_id', user.id);
+        .eq('user_id', user?.id);
 
       if (error) throw error;
 
       toast({
         title: 'Sucesso',
-        description: 'Conta bancária excluída com sucesso!',
+        description: 'Conta excluída com sucesso!',
       });
 
       loadAccounts();
@@ -127,7 +125,7 @@ export default function Accounts() {
       console.error('Erro ao excluir conta:', error);
       toast({
         title: 'Erro',
-        description: 'Não foi possível excluir a conta bancária.',
+        description: 'Não foi possível excluir a conta.',
         variant: 'destructive',
       });
     }
@@ -270,10 +268,36 @@ export default function Accounts() {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">{account.name}</CardTitle>
-                  <Badge variant="outline">
-                    <CreditCard className="mr-1 h-3 w-3" />
-                    Ativa
-                  </Badge>
+                  <div className='flex items-center space-x-2'>
+                    <Badge variant="outline">
+                      <CreditCard className="mr-1 h-3 w-3" />
+                      Ativa
+                    </Badge>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Excluir conta</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Tem certeza que deseja excluir esta conta? Esta ação não pode ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(account.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Excluir
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
                 {account.description && (
                   <p className="text-sm text-muted-foreground">{account.description}</p>
@@ -306,30 +330,6 @@ export default function Accounts() {
                   </div>
                 </div>
               </CardContent>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Excluir conta</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Tem certeza que deseja excluir esta conta? Esta ação não pode ser desfeita.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => handleDelete(transaction.id)}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                      Excluir
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
             </Card>
           ))}
         </div>

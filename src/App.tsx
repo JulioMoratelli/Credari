@@ -14,6 +14,7 @@ import Transactions from "./pages/Transactions";
 // import CreateGroup from "./pages/CreateGroup";
 // import Invitations from "./pages/Invitations";
 import NotFound from "./pages/NotFound";
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
       enableSystem
       disableTransitionOnChange
     >
+      <SpeedInsights />
       <AuthProvider>
         <TooltipProvider>
           <Toaster />

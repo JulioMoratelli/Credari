@@ -43,7 +43,7 @@ export default function Profile() {
   const [profile, setProfile] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
-    display_name: "",
+    name: "",
     email: "",
     phones: [] as { id?: string; number: string }[],
   });
@@ -60,7 +60,7 @@ export default function Profile() {
       // busca perfil
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
-        .select("id, display_name, email, created_at")
+        .select("id, name, email, created_at")
         .eq("user_id", user.id)
         .single();
 
@@ -76,7 +76,7 @@ export default function Profile() {
 
       setProfile(profileData);
       setFormData({
-        display_name: profileData.display_name || "Usuário",
+        name: profileData.name || "Usuário",
         email: profileData.email || user.email,
         phones: phonesData || [],
       });
@@ -101,7 +101,7 @@ export default function Profile() {
       const { error: profileError } = await supabase
         .from("profiles")
         .update({
-          display_name: formData.display_name,
+          name: formData.name,
           email: formData.email,
         })
         .eq("user_id", user.id);
@@ -230,7 +230,7 @@ export default function Profile() {
           <div className="flex items-center gap-2">
             <User className="h-5 w-5 text-muted-foreground" />
             <span className="font-medium">
-              {profile?.display_name || "Sem nome"}
+              {profile?.name || "Sem nome"}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -271,9 +271,9 @@ export default function Profile() {
                   <div>
                     <label className="text-sm font-medium">Nome</label>
                     <Input
-                      value={formData.display_name}
+                      value={formData.name}
                       onChange={(e) =>
-                        setFormData({ ...formData, display_name: e.target.value })
+                        setFormData({ ...formData, name: e.target.value })
                       }
                       placeholder="Seu nome"
                     />

@@ -145,11 +145,11 @@ export default function Layout({ children }: LayoutProps) {
                     <div className="flex items-center space-x-3 py-4 border-b">
                       <Avatar className="h-10 w-10">
                         <AvatarFallback>
-                          {user?.user_metadata?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
+                          {user?.user_metadata?.name?.[0]?.toUpperCase() || user?.user_metadata?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col space-y-1">
-                        <p className="font-medium text-sm">{user?.user_metadata?.display_name || 'Usuário'}</p>
+                        <p className="font-medium text-sm">{user?.user_metadata?.name || user?.user_metadata?.display_name || 'Usuário'}</p>
                         <p className="text-xs text-muted-foreground truncate max-w-[180px]">
                           {user?.email}
                         </p>
@@ -191,7 +191,7 @@ export default function Layout({ children }: LayoutProps) {
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full hidden lg:flex">
                     <Avatar className="h-8 w-8">
                       <AvatarFallback>
-                        {user?.user_metadata?.name || user?.user_metadata?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
+                        {user?.user_metadata?.name?.[0]?.toUpperCase() || user?.user_metadata?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
                   </Button>

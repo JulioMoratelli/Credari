@@ -191,7 +191,7 @@ export default function Layout({ children }: LayoutProps) {
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full hidden lg:flex">
                     <Avatar className="h-8 w-8">
                       <AvatarFallback>
-                        {user?.user_metadata?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
+                        {user?.user_metadata?.name || user?.user_metadata?.display_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
                   </Button>

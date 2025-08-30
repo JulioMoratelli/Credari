@@ -49,6 +49,7 @@ export default function Layout({ children }: LayoutProps) {
     // { name: 'Criar Grupo', href: '/create-group', icon: Users },
     // { name: 'Membros', href: '/group-members', icon: Users },
     // { name: 'Convites', href: '/invitations', icon: Mail },
+    { name: 'Perfil', href: '/profile', icon: User }
   ];
 
   const MobileNavigationItem = ({ item, onClose }: { item: typeof navigation[0], onClose: () => void }) => {
@@ -130,14 +131,14 @@ export default function Layout({ children }: LayoutProps) {
                     {/* Header do menu mobile */}
                     <div className="flex items-center justify-between pb-4 border-b">
                       <h2 className="text-lg font-semibold">Menu</h2>
-                      <Button
+                      {/* <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setIsMobileMenuOpen(false)}
                         className="p-2"
                       >
                         <X size={18} />
-                      </Button>
+                      </Button> */}
                     </div>
 
                     {/* Informações do usuário */}
@@ -198,16 +199,38 @@ export default function Layout({ children }: LayoutProps) {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
-                      <p className="font-medium">{user?.user_metadata?.display_name || 'Usuário'}</p>
+                      <p className="font-medium">{user?.user_metadata?.display_name || user?.user_metadata?.name || 'Usuário'}</p>
                       <p className="w-[200px] truncate text-sm text-muted-foreground">
                         {user?.email}
                       </p>
                     </div>
                   </div>
-                  <DropdownMenuItem onClick={signOut}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Sair
-                  </DropdownMenuItem>
+
+                  <div className="border-t pt-2">
+                    {navigation
+                      .filter((item) => item.name === 'Perfil')
+                      .map((item) => {
+                        const Icon = item.icon;
+                        const isActive = location.pathname === item.href;
+                        return (
+                          <Link
+                            key={item.name}
+                            to={item.href}
+                            className={`flex items-center space-x-2 px-2 py-2 rounded-md text-sm font-medium transition-colors ${isActive
+                              ? 'bg-primary text-primary-foreground'
+                              : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                              }`}
+                          >
+                            <Icon size={16} />
+                            <span>{item.name}</span>
+                          </Link>
+                        );
+                      })}
+                    <DropdownMenuItem onClick={signOut}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sair
+                    </DropdownMenuItem>
+                  </div>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

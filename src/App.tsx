@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Accounts from "./pages/Accounts";
 import Transactions from "./pages/Transactions";
+import Profile from "./pages/Profile";
 // import GroupMembers from "./pages/GroupMembers";
 // import CreateGroup from "./pages/CreateGroup";
 // import Invitations from "./pages/Invitations";
@@ -43,6 +44,11 @@ const App = () => (
               <Route path="/transactions" element={
                 <Layout>
                   <Transactions />
+                </Layout>
+              } />
+              <Route path="/profile" element={
+                <Layout>
+                  <Profile />
                 </Layout>
               } />
               {/* <Route path="/group-members" element={

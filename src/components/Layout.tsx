@@ -199,7 +199,7 @@ export default function Layout({ children }: LayoutProps) {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
-                      <p className="font-medium">{user?.user_metadata?.display_name || user?.user_metadata?.name || 'Usuário'}</p>
+                      <p className="font-medium">{user?.user_metadata?.name || user?.user_metadata?.display_name || 'Usuário'}</p>
                       <p className="w-[200px] truncate text-sm text-muted-foreground">
                         {user?.email}
                       </p>

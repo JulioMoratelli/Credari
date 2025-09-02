@@ -16,6 +16,7 @@ import Profile from "./pages/Profile";
 // import Invitations from "./pages/Invitations";
 import NotFound from "./pages/NotFound";
 import { SpeedInsights } from "@vercel/speed-insights/react"
+import Goals from "./pages/Goals";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,11 @@ const App = () => (
               <Route path="/profile" element={
                 <Layout>
                   <Profile />
+                </Layout>
+              } />
+              <Route path="/goals" element={
+                <Layout>
+                  <Goals />
                 </Layout>
               } />
               {/* <Route path="/group-members" element={

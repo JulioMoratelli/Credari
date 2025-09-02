@@ -46,6 +46,7 @@ export default function Layout({ children }: LayoutProps) {
     { name: 'Dashboard', href: '/', icon: Home },
     { name: 'Contas', href: '/accounts', icon: CreditCard },
     { name: 'Transações', href: '/transactions', icon: TrendingUp },
+    { name: 'Metas', href: '/goals', icon: TrendingUp },
     // { name: 'Criar Grupo', href: '/create-group', icon: Users },
     // { name: 'Membros', href: '/group-members', icon: Users },
     // { name: 'Convites', href: '/invitations', icon: Mail },

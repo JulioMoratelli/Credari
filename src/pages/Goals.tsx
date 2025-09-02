@@ -26,6 +26,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import GoalForm from "@/components/GoalForm";
+import { Progress } from "@/components/ui/progress";
 
 
 
@@ -137,17 +138,18 @@ export default function Goals() {
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="gradient-bg hover:opacity-90">
+            <Button
+              className="gradient-bg hover:opacity-90"
+              onClick={() => {
+                setEditingGoal(null);
+              }}
+            >
               <Plus className="mr-2 h-4 w-4" />
-              {editingGoal ? "Editar Meta" : "Nova Meta"}
+              Nova Meta
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="sm:max-w-md sm:max-w-md max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              {/* <DialogTitle>{editingGoal ? "Editar Meta" : "Criar Meta"}</DialogTitle> */}
-            </DialogHeader>
-
+          <DialogContent className="sm:max-w-md max-h-[80vh] overflow-y-auto">
             <GoalForm
               editingGoal={editingGoal}
               onSuccess={() => {
@@ -182,12 +184,18 @@ export default function Goals() {
                 <CardTitle>{goal.title}</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="space-y-1">
+                <div className="space-y-2 flex-1">
                   <p className="text-sm text-muted-foreground">{goal.description}</p>
-                  <p>
+                  <p className="text-sm font-medium">
                     {formatCurrency(goal.current_amount)} /{" "}
                     {formatCurrency(goal.target_amount)}
                   </p>
+
+                  <Progress
+                    value={(goal.current_amount / goal.target_amount) * 100}
+                    className="h-2 rounded-full"
+                  />
+
                   {goal.deadline && (
                     <p className="flex items-center text-sm text-muted-foreground">
                       <Calendar className="mr-1 h-3 w-3" />
@@ -195,32 +203,35 @@ export default function Goals() {
                     </p>
                   )}
                 </div>
+
                 <div className="flex items-center gap-2">
                   <Badge
                     variant={
                       goal.status === "completed"
                         ? "default"
                         : goal.status === "canceled"
-                        ? "destructive"
-                        : "secondary"
+                          ? "destructive"
+                          : "secondary"
                     }
                   >
                     {goal.status === "in_progress"
-                      ? "Em andamento"
+                      ? "🚀 Em Andamento"
                       : goal.status === "completed"
-                      ? "Concluída"
-                      : "Cancelada"}
+                        ? "✅ Concluída"
+                        : "❌ Cancelada"}
                   </Badge>
+
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      setEditingGoal(goal);
-                      setIsDialogOpen(true);
+                      setEditingGoal(goal)
+                      setIsDialogOpen(true)
                     }}
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
+
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="outline" size="sm">

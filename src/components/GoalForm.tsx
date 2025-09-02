@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,8 +14,6 @@ import {
 import { Calendar, Target, Tag, DollarSign } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 
-
-
 interface GoalFormProps {
   editingGoal?: any;
   onSuccess: () => void;
@@ -29,34 +27,56 @@ export default function GoalForm({
 }: GoalFormProps) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    title: editingGoal?.title || "",
-    description: editingGoal?.description || "",
-    target_amount: editingGoal?.target_amount || "",
-    current_amount: editingGoal?.current_amount || "",
-    deadline: editingGoal?.deadline || new Date().toISOString().split("T")[0],
-    status: editingGoal?.status || "in_progress",
+    title: "",
+    description: "",
+    target_amount: "",
+    current_amount: "",
+    deadline: new Date().toISOString().split("T")[0],
+    status: "in_progress",
   });
+
+  // 🔥 Atualiza formData sempre que mudar a meta sendo editada
+  useEffect(() => {
+    if (editingGoal) {
+      setFormData({
+        title: editingGoal.title || "",
+        description: editingGoal.description || "",
+        target_amount: editingGoal.target_amount?.toString() || "",
+        current_amount: editingGoal.current_amount?.toString() || "",
+        deadline: editingGoal.deadline || new Date().toISOString().split("T")[0],
+        status: editingGoal.status || "in_progress",
+      });
+    } else {
+      setFormData({
+        title: "",
+        description: "",
+        target_amount: "",
+        current_amount: "",
+        deadline: new Date().toISOString().split("T")[0],
+        status: "in_progress",
+      });
+    }
+  }, [editingGoal]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Pega usuário logado
       const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) throw new Error("Usuário não autenticado");
 
-      if (userError || !user) {
-        throw new Error("Usuário não autenticado");
-      }
-
-      // Cria meta com user_id
       const { error } = await supabase.from("goals").insert({
-        ...formData,
-        user_id: user.id, // obrigatório na tabela
+        title: formData.title,
+        description: formData.description,
+        target_amount: parseFloat(formData.target_amount) || 0,
+        current_amount: parseFloat(formData.current_amount) || 0,
+        deadline: formData.deadline,
+        status: formData.status,
+        user_id: user.id,
       });
 
       if (error) throw error;
-
       onSuccess();
     } catch (err) {
       console.error("Erro ao salvar meta:", err);
@@ -65,14 +85,44 @@ export default function GoalForm({
     }
   };
 
-  const handleUpdate = async () => {
-    // Lógica para atualizar a meta
-    const { error } = await supabase.from("goals").update(formData).eq("id", editingGoal.id);
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingGoal) return;
 
-    if (error) {
-      console.error("Erro ao atualizar meta:", error);
-    } else {
+    setLoading(true);
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) throw new Error("Usuário não autenticado");
+
+      const { error } = await supabase
+        .from("goals")
+        .update<{
+          title: string;
+          description: string;
+          target_amount: number;
+          current_amount: number;
+          deadline: string;
+          status: string;
+          user_id: string;
+          updated_at: string;
+        }>({
+          title: formData.title,
+          description: formData.description,
+          target_amount: parseFloat(formData.target_amount) || 0,
+          current_amount: parseFloat(formData.current_amount) || 0,
+          deadline: formData.deadline,
+          status: formData.status,
+          user_id: user.id,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", editingGoal.id);
+
+      if (error) throw error;
       onSuccess();
+    } catch (err) {
+      console.error("Erro ao atualizar meta:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,7 +136,10 @@ export default function GoalForm({
       </CardHeader>
 
       <CardContent className="p-6">
-        <form onSubmit={editingGoal ? handleUpdate : handleSubmit} className="space-y-6">
+        <form
+          onSubmit={editingGoal ? handleUpdate : handleSubmit}
+          className="space-y-6"
+        >
           {/* Título */}
           <div className="space-y-2">
             <Label htmlFor="title" className="flex items-center space-x-2">
@@ -124,10 +177,7 @@ export default function GoalForm({
           {/* Valores */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label
-                htmlFor="target_amount"
-                className="flex items-center space-x-2"
-              >
+              <Label htmlFor="target_amount" className="flex items-center space-x-2">
                 <DollarSign className="h-4 w-4" />
                 <span>Valor Alvo</span>
               </Label>
@@ -148,10 +198,7 @@ export default function GoalForm({
             </div>
 
             <div className="space-y-2">
-              <Label
-                htmlFor="current_amount"
-                className="flex items-center space-x-2"
-              >
+              <Label htmlFor="current_amount" className="flex items-center space-x-2">
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
                 <span>Valor Atual</span>
               </Label>
@@ -191,7 +238,8 @@ export default function GoalForm({
           <div className="space-y-2">
             <Label>Status</Label>
             <Select
-              value={formData.status}
+              key={editingGoal?.id || "new"} // 🔥 força reset limpo
+              value={formData.status || "in_progress"}
               onValueChange={(value) =>
                 setFormData((prev) => ({ ...prev, status: value }))
               }

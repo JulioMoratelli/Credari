@@ -179,51 +179,68 @@ export default function Goals() {
       ) : (
         <div className="space-y-4">
           {goals.map((goal) => (
-            <Card key={goal.id}>
-              <CardHeader>
-                <CardTitle>{goal.title}</CardTitle>
+            <Card
+              key={goal.id}
+              className="shadow-md hover:shadow-lg transition-shadow duration-300 rounded-2xl border border-muted/30"
+            >
+              <CardHeader className="pb-2 flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold text-foreground justify-between">
+                  {goal.title}
+                </CardTitle>
+                <Badge
+                  variant={
+                    goal.status === "completed"
+                      ? "default"
+                      : goal.status === "canceled"
+                        ? "destructive"
+                        : "secondary"
+                  }
+                  className="px-3 py-1 rounded-full text-xs font-medium"
+                >
+                  {goal.status === "in_progress"
+                    ? "🚀 Em Andamento"
+                    : goal.status === "completed"
+                      ? "✅ Concluída"
+                      : "❌ Cancelada"}
+                </Badge>
               </CardHeader>
-              <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="space-y-2 flex-1">
-                  <p className="text-sm text-muted-foreground">{goal.description}</p>
-                  <p className="text-sm font-medium">
-                    {formatCurrency(goal.current_amount)} /{" "}
-                    {formatCurrency(goal.target_amount)}
-                  </p>
 
-                  <Progress
-                    value={(goal.current_amount / goal.target_amount) * 100}
-                    className="h-2 rounded-full"
-                  />
+              <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+                {/* Lado esquerdo - informações principais */}
+                <div className="space-y-3 flex-1">
+                  <p className="text-sm text-muted-foreground">{goal.description}</p>
+
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      {formatCurrency(goal.current_amount)}{" "}
+                      <span className="text-muted-foreground">/</span>{" "}
+                      {formatCurrency(goal.target_amount)}
+                    </p>
+                    <Progress
+                      value={(goal.current_amount / goal.target_amount) * 100}
+                      className="h-2 mt-1 rounded-full"
+                    />
+                  </div>
 
                   {goal.deadline && (
-                    <p className="flex items-center text-sm text-muted-foreground">
-                      <Calendar className="mr-1 h-3 w-3" />
-                      {new Date(goal.deadline).toLocaleDateString("pt-BR")}
+                    <p className="flex items-center text-xs text-muted-foreground mt-2">
+                      <Calendar className="mr-1.5 h-4 w-4 text-muted-foreground" />
+                      Prazo:{" "}
+                      <span className="ml-1 font-medium text-foreground">
+                        {new Date(goal.deadline).toLocaleDateString("pt-BR")}
+                      </span>
                     </p>
                   )}
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <Badge
-                    variant={
-                      goal.status === "completed"
-                        ? "default"
-                        : goal.status === "canceled"
-                          ? "destructive"
-                          : "secondary"
-                    }
-                  >
-                    {goal.status === "in_progress"
-                      ? "🚀 Em Andamento"
-                      : goal.status === "completed"
-                        ? "✅ Concluída"
-                        : "❌ Cancelada"}
-                  </Badge>
+                {/* Lado direito - status e ações */}
+                <div className="flex items-center gap-3">
+
 
                   <Button
                     variant="outline"
                     size="sm"
+                    className="rounded-full"
                     onClick={() => {
                       setEditingGoal(goal)
                       setIsDialogOpen(true)
@@ -234,7 +251,7 @@ export default function Goals() {
 
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="rounded-full">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </AlertDialogTrigger>
@@ -242,8 +259,8 @@ export default function Goals() {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Excluir meta</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Você tem certeza de que deseja excluir esta meta? Esta ação
-                          não pode ser desfeita.
+                          Você tem certeza de que deseja excluir esta meta? Esta ação não pode
+                          ser desfeita.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>

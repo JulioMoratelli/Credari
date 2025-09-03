@@ -60,7 +60,7 @@ export default function Profile() {
       // busca perfil
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
-        .select("id, name, email, created_at")
+        .select("id, display_name, email, created_at")
         .eq("user_id", user.id)
         .single();
 
@@ -101,7 +101,7 @@ export default function Profile() {
       const { error: profileError } = await supabase
         .from("profiles")
         .update({
-          name: formData.name,
+          display_name: formData.name,
           email: formData.email,
         })
         .eq("user_id", user.id);
@@ -230,7 +230,7 @@ export default function Profile() {
           <div className="flex items-center gap-2">
             <User className="h-5 w-5 text-muted-foreground" />
             <span className="font-medium">
-              {profile?.name || "Sem nome"}
+              {profile?.display_name || "Sem nome"}
             </span>
           </div>
           <div className="flex items-center gap-2">

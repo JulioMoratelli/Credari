@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { LogOut, User, Home, CreditCard, TrendingUp, ArrowLeft, Users, Mail, Menu, X } from 'lucide-react';
+import { LogOut, User, Home, CreditCard, TrendingUp, Menu, Check } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useState, useEffect } from 'react';
@@ -50,7 +50,8 @@ export default function Layout({ children }: LayoutProps) {
     // { name: 'Criar Grupo', href: '/create-group', icon: Users },
     // { name: 'Membros', href: '/group-members', icon: Users },
     // { name: 'Convites', href: '/invitations', icon: Mail },
-    { name: 'Perfil', href: '/profile', icon: User }
+    { name: 'Perfil', href: '/profile', icon: User },
+    { name: 'Contratar', href: '/subscribe', icon: Check },
   ];
 
   const MobileNavigationItem = ({ item, onClose }: { item: typeof navigation[0], onClose: () => void }) => {
@@ -95,7 +96,8 @@ export default function Layout({ children }: LayoutProps) {
 
               {/* Navegação desktop */}
               <nav className="hidden lg:flex space-x-1">
-                {navigation.map((item) => {
+                {/* remover o contratar dessa lista */}
+                {navigation.filter((item) => item.name !== 'Contratar').map((item) => {
                   const Icon = item.icon;
                   const isActive = location.pathname === item.href;
                   return (
@@ -209,7 +211,7 @@ export default function Layout({ children }: LayoutProps) {
 
                   <div className="border-t pt-2">
                     {navigation
-                      .filter((item) => item.name === 'Perfil')
+                      .filter((item) => item.name === 'Perfil' || item.name === 'Contratar')
                       .map((item) => {
                         const Icon = item.icon;
                         const isActive = location.pathname === item.href;

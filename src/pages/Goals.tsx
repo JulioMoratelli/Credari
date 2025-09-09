@@ -177,32 +177,32 @@ export default function Goals() {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {goals.map((goal) => (
             <Card
               key={goal.id}
               className="shadow-md hover:shadow-lg transition-shadow duration-300 rounded-2xl border border-muted/30"
             >
-              <CardHeader className="pb-2 flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold text-foreground justify-between">
-                  {goal.title}
-                </CardTitle>
-                <Badge
-                  variant={
-                    goal.status === "completed"
-                      ? "default"
-                      : goal.status === "canceled"
-                        ? "destructive"
-                        : "secondary"
-                  }
-                  className="px-3 py-1 rounded-full text-xs font-medium"
-                >
-                  {goal.status === "in_progress"
-                    ? "🚀 Em Andamento"
-                    : goal.status === "completed"
+              <CardHeader className="pt-4 px-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg font-semibold">{goal.title}</CardTitle>
+                  <Badge
+                    variant={
+                      goal.status === "completed"
+                        ? "default"
+                        : goal.status === "canceled"
+                          ? "destructive"
+                          : "secondary"
+                    }
+                    className="uppercase px-2 py-1 text-xs font-medium"
+                  >
+                    {goal.status === "completed"
                       ? "✅ Concluída"
-                      : "❌ Cancelada"}
-                </Badge>
+                      : goal.status === "in_progress"
+                        ? "🚀 Em Progresso"
+                        : "❌ Cancelada"}
+                  </Badge>
+                </div>
               </CardHeader>
 
               <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
@@ -235,8 +235,6 @@ export default function Goals() {
 
                 {/* Lado direito - status e ações */}
                 <div className="flex items-center gap-3">
-
-
                   <Button
                     variant="outline"
                     size="sm"

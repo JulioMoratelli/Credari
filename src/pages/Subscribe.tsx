@@ -5,21 +5,21 @@ import { Sparkles, CheckCircle2 } from "lucide-react"
 
 export default function Subscribe() {
   const plans = [
-    {
-      name: "Start",
-      monthly: "R$ 9,00",
-      yearly: "R$ 96,00",
-      features: [
-        "Controle financeiro básico",
-        "Cadastro de receitas e despesas",
-        "Metas simples",
-      ],
-      links: {
-        monthly: "https://pay.kirvano.com/023ce88e-7c4f-4d38-98b3-2cb07c3bfce3",
-        yearly: "https://pay.kirvano.com/f4c559df-8e23-455c-a908-269b60ae27bf",
-      },
-      highlight: false,
-    },
+    // {
+    //   name: "Start",
+    //   monthly: "R$ 9,00",
+    //   yearly: "R$ 96,00",
+    //   features: [
+    //     "Controle financeiro básico",
+    //     "Cadastro de receitas e despesas",
+    //     "Metas simples",
+    //   ],
+    //   links: {
+    //     monthly: "https://pay.kirvano.com/023ce88e-7c4f-4d38-98b3-2cb07c3bfce3",
+    //     yearly: "https://pay.kirvano.com/f4c559df-8e23-455c-a908-269b60ae27bf",
+    //   },
+    //   highlight: false,
+    // },
     {
       name: "Premium",
       monthly: "R$ 19,00",
@@ -28,7 +28,7 @@ export default function Subscribe() {
         "Tudo do Start",
         "Insights inteligentes com IA",
         "Relatórios avançados",
-        "Exportação de dados",
+        "Lançamento automatizado via WhatsApp",
       ],
       links: {
         monthly: "https://pay.kirvano.com/fb62d656-6806-4bd5-819d-0274a5b84690",
@@ -52,7 +52,7 @@ export default function Subscribe() {
       </div>
 
       {/* Planos */}
-      <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+      <div className="grid md:grid-cols-1 gap-6 max-w-5xl mx-auto">
         {plans.map((plan) => (
           <Card
             key={plan.name}

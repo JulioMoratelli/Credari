@@ -13,7 +13,7 @@ const Home = () => {
           <div className="flex items-center space-x-3 h-10 overflow-hidden">
             <Link to="/" className="flex items-center space-x-2">
               <img
-                src="/public/escrito-branco.png"
+                src="/escrito-branco.png"
                 alt="Logo Credari"
                 className="h-full w-32 object-cover"
               />

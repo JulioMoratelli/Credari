@@ -152,19 +152,16 @@ export default function Layout({ children }: LayoutProps) {
           <div className="flex justify-between items-center">
             {/* Logo e navegação desktop */}
             <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-3">
-                {/* {location.pathname !== '/' && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => navigate(-1)}
-                    className="p-2 md:hidden"
-                  >
-                    <ArrowLeft size={18} />
-                  </Button>
-                )} */}
-                <h1 className="text-xl md:text-2xl font-bold text-foreground">Credari</h1>
+              <div className="flex items-center space-x-3 h-10 overflow-hidden">
+                <Link to="/" className="flex items-center space-x-2">
+                  <img
+                    src="/public/escrito-branco.png"
+                    alt="Logo Credari"
+                    className="h-full w-32 object-cover"
+                  />
+                </Link>
               </div>
+
 
               {/* Navegação desktop */}
               <nav className="hidden lg:flex space-x-1">

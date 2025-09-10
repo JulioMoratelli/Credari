@@ -10,9 +10,14 @@ const Home = () => {
       {/* Header */}
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            {/* <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-primary" /> */}
-            <span className="text-xl sm:text-2xl font-bold">Credari</span>
+          <div className="flex items-center space-x-3 h-10 overflow-hidden">
+            <Link to="/" className="flex items-center space-x-2">
+              <img
+                src="/public/escrito-branco.png"
+                alt="Logo Credari"
+                className="h-full w-32 object-cover"
+              />
+            </Link>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
             <ThemeToggle />

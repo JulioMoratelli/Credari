@@ -9,6 +9,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { useState, useEffect } from 'react';
 import { Label } from '@radix-ui/react-dropdown-menu';
 import { Textarea } from './ui/textarea';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -25,46 +26,54 @@ export default function Layout({ children }: LayoutProps) {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const handleSendSuggestion = async () => {
-  if (!suggestion.trim()) {
-    alert("Por favor, escreva uma sugestão antes de enviar.");
-    return;
-  }
-
-  setIsSending(true);
-  try {
-    const res = await fetch(
-      "https://fqmdkeectrunuzeargxb.supabase.co/functions/v1/send-suggestion",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ suggestion }), // <- formato correto
-      }
-    );
-
-    if (!res.ok) {
-      let errorMessage = "Erro ao enviar sugestão";
-      try {
-        const errorData = await res.json();
-        if (errorData?.error) errorMessage = errorData.error;
-      } catch {
-        const textError = await res.text();
-        if (textError) errorMessage = textError;
-      }
-      throw new Error(errorMessage);
+    if (!suggestion.trim()) {
+      alert("Por favor, escreva uma sugestão antes de enviar.");
+      return;
     }
 
-    setIsSuccess(true);
-    setSuggestion("");
-  } catch (err) {
-    console.error("Erro ao enviar:", err);
-    alert(err.message || "Erro ao enviar sugestão");
-  } finally {
-    setIsSending(false);
-  }
-};
+    setIsSending(true);
+    try {
+      const session = await supabase.auth.getSession(); // pega sessão do usuário
+      const token = session?.data?.session?.access_token;
+      if (!token) {
+        alert("Usuário não está logado");
+        setIsSending(false);
+        return;
+      }
 
+      const res = await fetch(
+        "https://fqmdkeectrunuzeargxb.supabase.co/functions/v1/send-suggestion",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` // 🔹 envia token pro backend
+          },
+          body: JSON.stringify({ suggestion }),
+        }
+      );
+
+      if (!res.ok) {
+        let errorMessage = "Erro ao enviar sugestão";
+        try {
+          const errorData = await res.json();
+          if (errorData?.error) errorMessage = errorData.error;
+        } catch {
+          const textError = await res.text();
+          if (textError) errorMessage = textError;
+        }
+        throw new Error(errorMessage);
+      }
+
+      setIsSuccess(true);
+      setSuggestion("");
+    } catch (err) {
+      console.error("Erro ao enviar:", err);
+      alert(err.message || "Erro ao enviar sugestão");
+    } finally {
+      setIsSending(false);
+    }
+  };
 
 
   // Redirecionar para login se não estiver autenticado

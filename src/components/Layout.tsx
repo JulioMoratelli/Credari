@@ -3,10 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { LogOut, User, Home, CreditCard, TrendingUp, Menu, Check } from 'lucide-react';
+import { LogOut, User, Home, CreditCard, TrendingUp, Menu, Check, Mail } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useState, useEffect } from 'react';
+import { Label } from '@radix-ui/react-dropdown-menu';
+import { Textarea } from './ui/textarea';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,6 +19,53 @@ export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const [suggestion, setSuggestion] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleSendSuggestion = async () => {
+  if (!suggestion.trim()) {
+    alert("Por favor, escreva uma sugestão antes de enviar.");
+    return;
+  }
+
+  setIsSending(true);
+  try {
+    const res = await fetch(
+      "https://fqmdkeectrunuzeargxb.supabase.co/functions/v1/send-suggestion",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ suggestion }), // <- formato correto
+      }
+    );
+
+    if (!res.ok) {
+      let errorMessage = "Erro ao enviar sugestão";
+      try {
+        const errorData = await res.json();
+        if (errorData?.error) errorMessage = errorData.error;
+      } catch {
+        const textError = await res.text();
+        if (textError) errorMessage = textError;
+      }
+      throw new Error(errorMessage);
+    }
+
+    setIsSuccess(true);
+    setSuggestion("");
+  } catch (err) {
+    console.error("Erro ao enviar:", err);
+    alert(err.message || "Erro ao enviar sugestão");
+  } finally {
+    setIsSending(false);
+  }
+};
+
+
 
   // Redirecionar para login se não estiver autenticado
   useEffect(() => {
@@ -120,6 +169,39 @@ export default function Layout({ children }: LayoutProps) {
             {/* Menu mobile e user menu */}
             <div className="flex items-center space-x-2">
               <ThemeToggle />
+
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="sm" className="p-2">
+                    <Mail size={20} />
+                    <span className="sr-only">Enviar sugestão</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[400px]">
+                  <div className="flex flex-col h-full">
+                    <h2 className="text-lg font-semibold mb-4">Enviar sugestão</h2>
+                    <div className="flex-1 space-y-4">
+                      <Label htmlFor="suggestion">Sua sugestão</Label>
+                      <Textarea
+                        id="suggestion"
+                        placeholder="Escreva aqui sua ideia ou sugestão..."
+                        value={suggestion}
+                        onChange={(e) => setSuggestion(e.target.value)}
+                      />
+                    </div>
+                    <Button
+                      className="mt-4"
+                      disabled={isSending || !suggestion}
+                      onClick={handleSendSuggestion}
+                    >
+                      {isSending ? "Enviando..." : "Enviar"}
+                    </Button>
+                    {isSuccess && (
+                      <p className="text-green-600 mt-2">Sugestão enviada com sucesso!</p>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
 
               {/* Menu mobile */}
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>

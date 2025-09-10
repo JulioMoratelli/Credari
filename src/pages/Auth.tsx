@@ -74,7 +74,7 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary/20 p-4">
       <img
-        src="/public/animacao-melhor.gif"
+        src="/animacao-melhor.gif"
         alt="Logo Credari"
         className="absolute inset-0 w-32 h-32 object-cover opacity-20"
       />

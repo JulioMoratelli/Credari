@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react';
 import { Label } from '@radix-ui/react-dropdown-menu';
 import { Textarea } from './ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -20,6 +21,8 @@ export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { toast } = useToast();
+
 
   const [suggestion, setSuggestion] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -53,6 +56,13 @@ export default function Layout({ children }: LayoutProps) {
         }
       );
 
+      if (res.ok) {
+        toast({
+          title: 'Sucesso!',
+          description: `Sugestão enviada com sucesso!`,
+        });
+      }
+
       if (!res.ok) {
         let errorMessage = "Erro ao enviar sugestão";
         try {
@@ -68,8 +78,12 @@ export default function Layout({ children }: LayoutProps) {
       setIsSuccess(true);
       setSuggestion("");
     } catch (err) {
-      console.error("Erro ao enviar:", err);
-      alert(err.message || "Erro ao enviar sugestão");
+      toast({
+        title: 'Erro',
+        description: err.message || "Erro ao enviar sugestão",
+        variant: 'destructive',
+      });
+      // alert(err.message || "Erro ao enviar sugestão");
     } finally {
       setIsSending(false);
     }
@@ -205,9 +219,6 @@ export default function Layout({ children }: LayoutProps) {
                     >
                       {isSending ? "Enviando..." : "Enviar"}
                     </Button>
-                    {isSuccess && (
-                      <p className="text-green-600 mt-2">Sugestão enviada com sucesso!</p>
-                    )}
                   </div>
                 </SheetContent>
               </Sheet>

@@ -11,6 +11,7 @@ import { Label } from '@radix-ui/react-dropdown-menu';
 import { Textarea } from './ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTheme } from 'next-themes';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -22,8 +23,7 @@ export default function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { toast } = useToast();
-
-
+  const { theme } = useTheme();
   const [suggestion, setSuggestion] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -154,11 +154,18 @@ export default function Layout({ children }: LayoutProps) {
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-3 h-10 overflow-hidden">
                 <Link to="/" className="flex items-center space-x-2">
-                  <img
-                    src="/escrito-branco.png"
-                    alt="Logo Credari"
-                    className="h-full w-32 object-cover"
-                  />
+                  {theme === 'dark' ? (
+                    <img
+                      src="/escrito-branco.png"
+                      alt="Logo Credari"
+                      className="h-full w-32 object-cover"
+                    />) : (
+                    <img
+                      src="/escrito-preto.png"
+                      alt="Logo Credari"
+                      className="h-full w-32 object-cover"
+                    />
+                  )}
                 </Link>
               </div>
 
@@ -192,8 +199,8 @@ export default function Layout({ children }: LayoutProps) {
 
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="p-2">
-                    <Mail size={20} />
+                  <Button variant="ghost" size="icon" className="p-2">
+                    <Mail className="h-[1.2rem] w-[1.2rem]" />
                     <span className="sr-only">Enviar sugestão</span>
                   </Button>
                 </SheetTrigger>

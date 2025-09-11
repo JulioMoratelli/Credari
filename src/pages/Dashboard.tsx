@@ -27,6 +27,7 @@ interface DashboardData {
 export default function Dashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [profile, setProfile] = useState<any>(null);
   const [data, setData] = useState<DashboardData>({
     totalBalance: 0,
     totalIncome: 0,
@@ -45,6 +46,15 @@ export default function Dashboard() {
   const loadDashboardData = async () => {
     try {
       // Buscar contas bancárias
+      const {data: profiles, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user?.id);
+
+      if (profileError) throw profileError;
+
+      setProfile(profiles?.[0] || null);
+
       const { data: accounts, error: accountsError } = await supabase
         .from('bank_accounts')
         .select('current_balance')
@@ -106,6 +116,8 @@ export default function Dashboard() {
     }
   };
 
+  console.log(profile);
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -138,11 +150,11 @@ export default function Dashboard() {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="space-y-2">
           <h1 className="text-3xl md:text-4xl font-bold gradient-bg bg-clip-text text-transparent">
-            Dashboard Inteligente
+            Dashboard
           </h1>
           <p className="text-muted-foreground flex items-center space-x-2">
             <Sparkles className="h-4 w-4 text-primary" />
-            <span>Bem-vindo, {user?.user_metadata?.display_name || user?.email}</span>
+            <span>Bem-vindo, {profile.display_name || user?.user_metadata?.display_name || user?.email}</span>
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
